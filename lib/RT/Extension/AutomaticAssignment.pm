@@ -101,6 +101,13 @@ will happen even if the ticket has an owner already.
 
     Set(%AutomaticAssignment_Choosers, (
         Default => 'Random',
+        QueueDefaults => {
+            General => 'Ownership',
+            Review => {
+                class => 'Ownership',
+                ties => [ ['new', 'open'], 'stalled' ],
+            },
+        },
     ));
 
 =back
