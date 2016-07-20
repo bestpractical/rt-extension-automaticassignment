@@ -44,7 +44,7 @@ Best Practical Solutions, LLC E<lt>modules@bestpractical.comE<gt>
 
 All bugs should be reported via email to
 
-    L<bug-RT-Extension-AssetSQL@rt.cpan.org|mailto:bug-RT-Extension-AutomaticAssignment@rt.cpan.org>
+    L<bug-RT-Extension-AutomaticAssignment@rt.cpan.org|mailto:bug-RT-Extension-AutomaticAssignment@rt.cpan.org>
 
 or via the web at
 
