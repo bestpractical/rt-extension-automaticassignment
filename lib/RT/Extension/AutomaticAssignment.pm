@@ -18,7 +18,32 @@ sub ChooseOwnerForTicket {
     my $ticket = shift;
     my $users  = shift;
 
-    return $users->[rand @$users];
+    my $queue = $ticket->QueueObj->Name;
+    my $choosers = RT->Config->Get('AutomaticAssignment_Choosers');
+    if (!$choosers) {
+        RT->Logger->error("No AutomaticAssignment_Choosers defined; automatic assignment cannot occur.");
+        return;
+    }
+
+    my $config = $choosers->{QueueDefault}{ $queue } || $choosers->{Default};
+    my $chooser_name;
+
+    if (!$config) {
+        RT->Logger->error("No AutomaticAssignment_Choosers Default or QueueDefault for queue '$queue' defined; automatic assignment cannot occur.");
+        return;
+    }
+
+    if (ref($config)) {
+        $chooser_name = $config->{class};
+    }
+    else {
+        $chooser_name = $config;
+        $config = {};
+    }
+
+    my $chooser_class = $chooser_name =~ /::/ ? $chooser_name : "RT::Extension::AutomaticAssignment::Chooser::$chooser_name";
+    $chooser_class->require or die $UNIVERSAL::require::ERROR;
+    return $chooser_class->ChooseOwnerForTicket($ticket, $users, $config);
 }
 
 sub OwnerForTicket {
@@ -71,6 +96,12 @@ scrip on some of your queues. Any tickets explicitly created with an owner
 will retain that owner. You may also want an On Queue Change, Automatic
 Reassignment scrip. For Automatic Reassignment, the automatic assignment
 will happen even if the ticket has an owner already.
+
+=item Configure automatic assignment policies
+
+    Set(%AutomaticAssignment_Choosers, (
+        Default => 'Random',
+    ));
 
 =back
 
