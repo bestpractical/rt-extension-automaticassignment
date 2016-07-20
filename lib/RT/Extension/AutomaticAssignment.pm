@@ -4,6 +4,35 @@ package RT::Extension::AutomaticAssignment;
 
 our $VERSION = '0.01';
 
+sub AvailableOwnersForTicket {
+    my $class  = shift;
+    my $ticket = shift;
+
+    my $users = RT::Users->new(RT->SystemUser);
+    $users->LimitToPrivileged;
+    return $users->ItemsArrayRef;
+}
+
+sub ChooseOwnerForTicket {
+    my $class  = shift;
+    my $ticket = shift;
+    my $users  = shift;
+
+    return $users->[rand @$users];
+}
+
+sub OwnerForTicket {
+    my $class  = shift;
+    my $ticket = shift;
+
+    my $users = $class->AvailableOwnersForTicket($ticket);
+    return if !$users;
+
+    my $user = $class->ChooseOwnerForTicket($ticket, $users);
+
+    return $user;
+}
+
 =head1 NAME
 
 RT-Extension-AutomaticAssignment - 

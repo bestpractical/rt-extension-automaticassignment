@@ -16,6 +16,7 @@ meta-spec:
 name: RT-Extension-AutomaticAssignment
 no_index:
   directory:
+    - etc
     - inc
 requires:
   perl: 5.8.3
