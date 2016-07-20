@@ -63,6 +63,15 @@ Add this line:
 
 =item Restart your webserver
 
+=item Create scrips
+
+This lets you control which circumstances automatic assignment should take
+place. For example, perhaps you want an On Create, Automatic Assignment
+scrip on some of your queues. Any tickets explicitly created with an owner
+will retain that owner. You may also want an On Queue Change, Automatic
+Reassignment scrip. For Automatic Reassignment, the automatic assignment
+will happen even if the ticket has an owner already.
+
 =back
 
 =head1 AUTHOR
