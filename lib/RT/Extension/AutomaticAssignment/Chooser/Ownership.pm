@@ -29,7 +29,7 @@ sub ChooseOwnerForTicket {
 
     if ($config->{ties}) {
         for my $statuses (@{ $config->{ties} }) {
-            if (ref($statuses) {
+            if (ref($statuses)) {
                 # multiple statuses at the same round (like new/open above)
                 # arbitrarily map to the first status in the list (new)
                 my $primary = $statuses->[0];
@@ -51,15 +51,15 @@ sub ChooseOwnerForTicket {
         # then simplify by selecting the user with the fewest
         # active-status tickets. we map everything to a single
         # "active" round
-        @statuses = $queue->ActiveStatusArray;
-        $primary_status{$_} = 'active' for @statuses;
+        @all_statuses = $ticket->QueueObj->ActiveStatusArray;
+        $primary_status{$_} = 'active' for @all_statuses;
         @rounds = 'active';
     }
 
     # limit to all the statuses we've seen thus far
     # we certainly don't want to look at all resolved tickets (unless
     # directed to)
-    for my $status (@statuses) {
+    for my $status (@all_statuses) {
         $tickets->LimitStatus(VALUE => $status);
     }
 
