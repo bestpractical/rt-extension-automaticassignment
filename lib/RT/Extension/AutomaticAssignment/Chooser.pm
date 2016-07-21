@@ -1,4 +1,6 @@
 package RT::Extension::AutomaticAssignment::Chooser;
+use strict;
+use warnings;
 use base 'RT::Base';
 
 sub ChooseOwnerForTicket {

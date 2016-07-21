@@ -1,4 +1,6 @@
 package RT::Action::AutomaticReassignment;
+use strict;
+use warnings;
 use base 'RT::Action::AutomaticAssignment';
 
 # any owner is fine

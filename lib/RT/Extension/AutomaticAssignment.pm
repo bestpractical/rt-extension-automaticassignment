@@ -1,6 +1,6 @@
+package RT::Extension::AutomaticAssignment;
 use strict;
 use warnings;
-package RT::Extension::AutomaticAssignment;
 
 our $VERSION = '0.01';
 

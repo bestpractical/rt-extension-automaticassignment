@@ -1,4 +1,6 @@
 package RT::Extension::AutomaticAssignment::Chooser::Random;
+use strict;
+use warnings;
 use base 'RT::Extension::AutomaticAssignment::Chooser';
 
 sub ChooseOwnerForTicket {

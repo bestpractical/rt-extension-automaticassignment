@@ -1,4 +1,6 @@
 package RT::Action::AutomaticAssignment;
+use strict;
+use warnings;
 use base 'RT::Action';
 
 # only tickets that are unassigned will be automatically assigned.
