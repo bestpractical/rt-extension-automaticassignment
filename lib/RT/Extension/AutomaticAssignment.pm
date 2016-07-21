@@ -4,56 +4,119 @@ use warnings;
 
 our $VERSION = '0.01';
 
-sub AvailableOwnersForTicket {
-    my $class  = shift;
+sub _LoadedClass {
+    my $self      = shift;
+    my $namespace = shift;
+    my $name      = shift;
+
+    my $class = $name =~ /::/ ? $name : "RT::Extension::AutomaticAssignment::${namespace}::$name";
+    $class->require or die $UNIVERSAL::require::ERROR;
+    return $class;
+}
+
+sub _UnfilteredOwnersForTicket {
+    my $self   = shift;
     my $ticket = shift;
 
     my $users = RT::Users->new(RT->SystemUser);
     $users->LimitToPrivileged;
-    return $users->ItemsArrayRef;
+    $users->WhoHaveRight(
+        Right               => 'OwnTicket',
+        Object              => $ticket,
+        IncludeSystemRights => 1,
+        IncludeSuperusers   => 1,
+    );
+
+    return $users;
 }
 
-sub ChooseOwnerForTicket {
-    my $class  = shift;
+sub _EligibleOwnersForTicket {
+    my $self   = shift;
+    my $ticket = shift;
+    my $config = shift;
+
+    my $users = $self->_UnfilteredOwnersForTicket($ticket);
+
+    for my $filter (@{ $config->{filters} }) {
+        my $class = $filter->{class};
+        $class->FilterOwnersForTicket($ticket, $users, $filter);
+    }
+
+    return $users;
+}
+
+sub _ChooseOwnerForTicket {
+    my $self   = shift;
     my $ticket = shift;
     my $users  = shift;
+    my $config = shift;
+
+    my $class = $config->{chooser};
+    return $class->ChooseOwnerForTicket($ticket, $users, $config->{chooser});
+}
+
+sub _ConfigForTicket {
+    my $self = shift;
+    my $ticket = shift;
 
     my $queue = $ticket->QueueObj->Name;
-    my $choosers = RT->Config->Get('AutomaticAssignment_Choosers');
-    if (!$choosers) {
-        RT->Logger->error("No AutomaticAssignment_Choosers defined; automatic assignment cannot occur.");
-        return;
-    }
-
-    my $config = $choosers->{QueueDefault}{ $queue } || $choosers->{Default};
-    my $chooser_name;
-
+    my $config = RT->Config->Get('AutomaticAssignment');
     if (!$config) {
-        RT->Logger->error("No AutomaticAssignment_Choosers Default or QueueDefault for queue '$queue' defined; automatic assignment cannot occur.");
+        RT->Logger->error("No AutomaticAssignment config defined; automatic assignment cannot occur.");
         return;
     }
 
-    if (ref($config)) {
-        $chooser_name = $config->{class};
+    # merge the queue-specific config into the default config
+    my %merged_config = %{ $config->{Default} || {} };
+    $merged_config{ $_ } = $config->{QueueDefault}{ $queue }->{ $_ }
+        for keys %{ $config->{QueueDefault}{ $queue } || {} }
+
+    # filters not required, since the default list is "users who can own
+    # tickets in this queue"
+    $merged_config{filters} ||= [];
+
+    # chooser is required
+    if (!$merged_config{chooser}) {
+        RT->Logger->error("No AutomaticAssignment chooser defined for queue '$quuee'; automatic assignment cannot occur.");
+        return;
+    }
+
+    # load each filter class
+    for (@{ $merged_config{filters} }) {
+        if (!ref($_)) {
+            $_ = {
+                class => $self->_LoadedClass('Filter', $_),
+            };
+        }
+        else {
+            $_->{class} = $self->_LoadedClass('Filter', $_->{class});
+        }
+    }
+
+    # load chooser class
+    if (!ref($merged_config{chooser})) {
+        $merged_config{chooser} = {
+            class => $self->_LoadedClass('Chooser', $merged_config{chooser}),
+        };
     }
     else {
-        $chooser_name = $config;
-        $config = {};
+        $merged_config{chooser}{class} = $self->_LoadedClass('Chooser', $merged_config{chooser}{class});
     }
 
-    my $chooser_class = $chooser_name =~ /::/ ? $chooser_name : "RT::Extension::AutomaticAssignment::Chooser::$chooser_name";
-    $chooser_class->require or die $UNIVERSAL::require::ERROR;
-    return $chooser_class->ChooseOwnerForTicket($ticket, $users, $config);
+    return \%merged_config;
 }
 
 sub OwnerForTicket {
-    my $class  = shift;
+    my $self   = shift;
     my $ticket = shift;
 
-    my $users = $class->AvailableOwnersForTicket($ticket);
+    my $config = $self->_ConfigForTicket($ticket);
+    return if !$config;
+
+    my $users = $self->_EligibleOwnersForTicket($ticket, $config);
     return if !$users;
 
-    my $user = $class->ChooseOwnerForTicket($ticket, $users);
+    my $user = $self->_ChooseOwnerForTicket($ticket, $users, $config);
 
     return $user;
 }
