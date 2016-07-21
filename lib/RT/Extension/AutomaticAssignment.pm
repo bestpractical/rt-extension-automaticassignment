@@ -102,9 +102,9 @@ will happen even if the ticket has an owner already.
     Set(%AutomaticAssignment_Choosers, (
         Default => 'Random',
         QueueDefaults => {
-            General => 'Ownership',
+            General => 'TicketStatus',
             Review => {
-                class => 'Ownership',
+                class => 'TicketStatus',
                 ties => [ ['new', 'open'], 'stalled' ],
             },
         },

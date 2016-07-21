@@ -1,4 +1,4 @@
-package RT::Extension::AutomaticAssignment::Chooser::Ownership;
+package RT::Extension::AutomaticAssignment::Chooser::TicketStatus;
 use strict;
 use warnings;
 use base 'RT::Extension::AutomaticAssignment::Chooser';
@@ -9,7 +9,7 @@ sub ChooseOwnerForTicket {
     my @users  = @{ shift(@_) };
     my $config = shift;
 
-    # for Ownership we only consider tickets in the same queue
+    # for TicketStatus we only consider tickets in the same queue
     my $tickets = RT::Tickets->new($ticket->CurrentUser);
     $tickets->LimitQueue(VALUE => $ticket->Queue);
 
