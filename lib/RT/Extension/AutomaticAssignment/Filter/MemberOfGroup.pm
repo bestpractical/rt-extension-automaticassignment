@@ -9,8 +9,17 @@ sub FilterOwnersForTicket {
     my $users  = shift;
     my $config = shift;
 
-    my $group_name = $config->{name}
-        or die "Unable to filter MemberOfGroup; no name provided.";
+    my $group_name;
+
+    if ($config->{name}) {
+        $group_name = $config->{name};
+    }
+    elsif ($config->{queue_cf}) {
+        $group_name = $ticket->QueueObj->FirstCustomFieldValue($config->{queue_cf});
+    }
+    else {
+        die "Unable to filter MemberOfGroup; no name or queue_cf provided.";
+    }
 
     my $group = RT::Group->new($ticket->CurrentUser);
     $group->LoadUserDefinedGroup($group_name);
