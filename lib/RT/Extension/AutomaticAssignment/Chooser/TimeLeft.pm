@@ -7,7 +7,7 @@ use List::Util 'reduce';
 sub ChooseOwnerForTicket {
     my $class  = shift;
     my $ticket = shift;
-    my $users  = shift;
+    my @users  = @{ shift->ItemsArrayRef };
     my $config = shift;
 
     # for TimeLeft we only consider tickets in the same queue
@@ -24,7 +24,7 @@ sub ChooseOwnerForTicket {
         $timeleft_by_owner{ $ticket->Owner } += $time_left;
     }
 
-    return reduce { $timeleft_by_owner{$a->id} < $timeleft_by_owner{$b->id} ? $a : $b } @$users;
+    return reduce { $timeleft_by_owner{$a->id} < $timeleft_by_owner{$b->id} ? $a : $b } @users;
 }
 
 1;

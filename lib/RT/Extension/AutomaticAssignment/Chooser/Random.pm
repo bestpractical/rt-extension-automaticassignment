@@ -6,10 +6,10 @@ use base 'RT::Extension::AutomaticAssignment::Chooser';
 sub ChooseOwnerForTicket {
     my $class  = shift;
     my $ticket = shift;
-    my $users  = shift;
+    my @users  = @{ shift->ItemsArrayRef };
     my $config = shift;
 
-    return $users->[rand @$users];
+    return $users[rand @users];
 }
 
 1;

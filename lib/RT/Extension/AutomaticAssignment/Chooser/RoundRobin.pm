@@ -7,7 +7,7 @@ use List::Util 'reduce';
 sub ChooseOwnerForTicket {
     my $class  = shift;
     my $ticket = shift;
-    my $users  = shift;
+    my @users  = @{ shift->ItemsArrayRef };
     my $config = shift;
 
     my $queue = $ticket->Queue;
