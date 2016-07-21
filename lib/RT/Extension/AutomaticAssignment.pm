@@ -38,8 +38,13 @@ sub _EligibleOwnersForTicket {
     my $users = $self->_UnfilteredOwnersForTicket($ticket);
 
     for my $filter (@{ $config->{filters} }) {
-        my $class = $filter->{class};
-        $class->FilterOwnersForTicket($ticket, $users, $filter);
+        if (ref($filter) eq 'CODE') {
+            $filter->($users, $ticket);
+        }
+        else {
+            my $class = $filter->{class};
+            $class->FilterOwnersForTicket($ticket, $users, $filter);
+        }
     }
 
     return $users;
@@ -87,6 +92,9 @@ sub _ConfigForTicket {
             $_ = {
                 class => $self->_LoadedClass('Filter', $_),
             };
+        }
+        elsif (ref($_) eq 'CODE') {
+            # nothing to do
         }
         else {
             $_->{class} = $self->_LoadedClass('Filter', $_->{class});
