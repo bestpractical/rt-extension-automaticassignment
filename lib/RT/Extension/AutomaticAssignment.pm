@@ -50,7 +50,7 @@ sub _ChooseOwnerForTicket {
     my $users  = shift;
     my $config = shift;
 
-    my $class = $config->{chooser};
+    my $class = $config->{chooser}{class};
     return $class->ChooseOwnerForTicket($ticket, $users, $config->{chooser});
 }
 
@@ -68,7 +68,7 @@ sub _ConfigForTicket {
     # merge the queue-specific config into the default config
     my %merged_config = %{ $config->{Default} || {} };
     $merged_config{ $_ } = $config->{QueueDefault}{ $queue }->{ $_ }
-        for keys %{ $config->{QueueDefault}{ $queue } || {} }
+        for keys %{ $config->{QueueDefault}{ $queue } || {} };
 
     # filters not required, since the default list is "users who can own
     # tickets in this queue"
@@ -76,7 +76,7 @@ sub _ConfigForTicket {
 
     # chooser is required
     if (!$merged_config{chooser}) {
-        RT->Logger->error("No AutomaticAssignment chooser defined for queue '$quuee'; automatic assignment cannot occur.");
+        RT->Logger->error("No AutomaticAssignment chooser defined for queue '$queue'; automatic assignment cannot occur.");
         return;
     }
 
