@@ -20,12 +20,6 @@ sub _UnfilteredOwnersForTicket {
 
     my $users = RT::Users->new(RT->SystemUser);
     $users->LimitToPrivileged;
-    $users->WhoHaveRight(
-        Right               => 'OwnTicket',
-        Object              => $ticket,
-        IncludeSystemRights => 1,
-        IncludeSuperusers   => 1,
-    );
 
     return $users;
 }
@@ -35,7 +29,7 @@ sub _EligibleOwnersForTicket {
     my $ticket = shift;
     my $config = shift;
 
-    my $users = $self->_UnfilteredOwnersForTicket($ticket);
+    my $users = RT::Users->new(RT->SystemUser);
 
     for my $filter (@{ $config->{filters} }) {
         if (ref($filter) eq 'CODE') {
@@ -123,6 +117,15 @@ sub OwnerForTicket {
 
     my $users = $self->_EligibleOwnersForTicket($ticket, $config);
     return if !$users;
+
+    # this has to come very late due to how it's implemented as replacing
+    # the collection (using rebless) with a DBIx::SearchBuilder::Union
+    $users->WhoHaveRight(
+        Right               => 'OwnTicket',
+        Object              => $ticket,
+        IncludeSystemRights => 1,
+        IncludeSuperusers   => 1,
+    );
 
     my $user = $self->_ChooseOwnerForTicket($ticket, $users, $config);
 
