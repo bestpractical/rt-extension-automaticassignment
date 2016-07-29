@@ -127,7 +127,8 @@ sub OwnerForTicket {
         IncludeSuperusers   => 1,
     );
 
-    my $user = $self->_ChooseOwnerForTicket($ticket, $users, $config);
+    my @users = @{ $users->ItemsArrayRef };
+    my $user = $self->_ChooseOwnerForTicket($ticket, \@users, $config);
 
     return $user;
 }

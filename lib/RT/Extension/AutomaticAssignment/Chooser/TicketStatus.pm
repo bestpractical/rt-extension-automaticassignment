@@ -6,7 +6,7 @@ use base 'RT::Extension::AutomaticAssignment::Chooser';
 sub ChooseOwnerForTicket {
     my $class  = shift;
     my $ticket = shift;
-    my @users  = @{ shift->ItemsArrayRef };
+    my @users  = @{ shift(@_) };
     my $config = shift;
 
     # for TicketStatus we only consider tickets in the same queue

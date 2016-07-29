@@ -7,7 +7,7 @@ use List::Util 'reduce';
 sub ChooseOwnerForTicket {
     my $class  = shift;
     my $ticket = shift;
-    my @users  = @{ shift->ItemsArrayRef };
+    my @users  = @{ shift(@_) };
     my $config = shift;
 
     # for TimeLeft we only consider tickets in the same queue
