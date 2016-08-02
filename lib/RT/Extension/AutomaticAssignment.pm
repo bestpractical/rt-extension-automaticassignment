@@ -30,6 +30,11 @@ sub _EligibleOwnersForTicket {
     my $config = shift;
 
     my $users = RT::Users->new(RT->SystemUser);
+    $users->Limit(
+        FIELD    => 'id',
+        OPERATOR => 'NOT IN',
+        VALUE    => [ RT->System->id, RT->Nobody->id ],
+    );
 
     for my $filter (@{ $config->{filters} }) {
         if (ref($filter) eq 'CODE') {
