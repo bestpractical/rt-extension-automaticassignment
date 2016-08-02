@@ -37,7 +37,29 @@ sub _EligibleOwnersForTicket {
         }
         else {
             my $class = $filter->{class};
-            $class->FilterOwnersForTicket($ticket, $users, $filter);
+            $class->FilterOwnersForTicket($ticket, $users, $filter)
+                if !$class->FiltersUsersArray;
+        }
+    }
+
+    return $users;
+}
+
+sub _FilterUsersArrayForTicket {
+    my $self   = shift;
+    my $ticket = shift;
+    my $users  = shift;
+    my $config = shift;
+
+    for my $filter (@{ $config->{filters} }) {
+        if (ref($filter) eq 'CODE') {
+            next;
+        }
+        else {
+            my $class = $filter->{class};
+            next unless $class->FiltersUsersArray;
+
+            $users = $class->FilterOwnersForTicket($ticket, $users, $filter);
         }
     }
 
@@ -128,6 +150,9 @@ sub OwnerForTicket {
     );
 
     my @users = @{ $users->ItemsArrayRef };
+
+    @users = @{ $self->_FilterUsersArrayForTicket($ticket, \@users, $config) };
+
     my $user = $self->_ChooseOwnerForTicket($ticket, \@users, $config);
 
     return $user;

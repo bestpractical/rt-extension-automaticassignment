@@ -8,6 +8,10 @@ sub FilterOwnersForTicket {
     die "Subclass " . ref($self) . " of " . __PACKAGE__ . " does not implement required method FilterOwnersForTicket";
 }
 
+sub FiltersUsersArray {
+    return 0;
+}
+
 1;
 
 
