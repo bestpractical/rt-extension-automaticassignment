@@ -1,4 +1,4 @@
-package RT::Extension::AutomaticAssignment::Filter::UserDates;
+package RT::Extension::AutomaticAssignment::Filter::ExcludedDates;
 use strict;
 use warnings;
 use base 'RT::Extension::AutomaticAssignment::Filter';
@@ -27,31 +27,7 @@ sub FilterOwnersForTicket {
     my $now = RT::Date->new(RT->SystemUser);
     $now->SetToNow;
 
-    if ($config->{between}) {
-        my ($start_name, $end_name) = @{ $config->{between} };
-        my $start_cf = $class->_UserCF($start_name);
-        my $end_cf = $class->_UserCF($end_name);
-
-        my $subclause = $start_name . '-' . $end_name;
-
-        # start_cf <= now <= end_cf
-        $users->LimitCustomField(
-            SUBCLAUSE       => $subclause,
-            CUSTOMFIELD     => $start_cf->Id,
-            COLUMN          => 'Content',
-            OPERATOR        => '<=',
-            VALUE           => $now->ISO,
-        );
-        $users->LimitCustomField(
-            SUBCLAUSE       => $subclause,
-            CUSTOMFIELD     => $end_cf->Id,
-            COLUMN          => 'Content',
-            OPERATOR        => '>=',
-            VALUE           => $now->ISO,
-            ENTRYAGGREGATOR => 'AND',
-        );
-    }
-    elsif ($config->{except_between}) {
+    if ($config->{except_between}) {
         my ($start_name, $end_name) = @{ $config->{except_between} };
         my $start_cf = $class->_UserCF($start_name);
         my $end_cf = $class->_UserCF($end_name);
@@ -96,7 +72,7 @@ sub FilterOwnersForTicket {
         );
     }
     else {
-        die "Unable to filter UserDates; no 'between' or 'except_between' provided.";
+        die "Unable to filter ExcludedDates; no 'except_between' provided.";
     }
 }
 
