@@ -19,6 +19,7 @@ no_index:
     - etc
     - inc
 requires:
+  Business::Hours: 0
   perl: 5.8.3
 resources:
   license: http://opensource.org/licenses/gpl-license.php
