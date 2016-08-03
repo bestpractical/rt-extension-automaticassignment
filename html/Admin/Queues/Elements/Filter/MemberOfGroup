@@ -1,0 +1,9 @@
+<&| /Widgets/TitleBox, title => loc('Member of Group') &>
+<p>This filter selects eligible owners by their group membership. Only members of the following group will be automatically assigned tickets.</p>
+<% $i %>
+</&>
+<%INIT>
+</%INIT>
+<%ARGS>
+$i
+</%ARGS>

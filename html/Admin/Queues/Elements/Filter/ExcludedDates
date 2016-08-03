@@ -1,0 +1,9 @@
+<&| /Widgets/TitleBox, title => loc('Excluded Dates') &>
+<p>This filter selects eligible owners by datetime custom fields on users, meant for scheduled vacations. If the current date and time falls between the following two custom fields, the user will be excluded from automatic assignment.</p>
+<% $i %>
+</&>
+<%INIT>
+</%INIT>
+<%ARGS>
+$i
+</%ARGS>

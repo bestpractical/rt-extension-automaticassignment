@@ -1,0 +1,3 @@
+<&| /Widgets/TitleBox, title => loc('Round Robin') &>
+<p>This chooser selects the user for whom it has been the longest amount of timesince they were last automatically assigned a ticket in the same queue. This effectively distributes the tickets evenly between the userbase in a round robin fashion, even if users enter and leave the pool.</p>
+</&>

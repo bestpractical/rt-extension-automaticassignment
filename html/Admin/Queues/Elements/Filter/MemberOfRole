@@ -1,0 +1,9 @@
+<&| /Widgets/TitleBox, title => loc('Member of Role') &>
+<p>This filter selects eligible owners by their role membership. Only members of the following role, either on the queue or on the ticket itself, will be automatically assigned tickets.</p>
+<% $i %>
+</&>
+<%INIT>
+</%INIT>
+<%ARGS>
+$i
+</%ARGS>

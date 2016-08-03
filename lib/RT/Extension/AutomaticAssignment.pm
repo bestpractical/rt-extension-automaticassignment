@@ -4,6 +4,8 @@ use warnings;
 
 our $VERSION = '0.01';
 
+RT->AddStyleSheets("automatic-assignment.css");
+
 sub _LoadedClass {
     my $self      = shift;
     my $namespace = shift;

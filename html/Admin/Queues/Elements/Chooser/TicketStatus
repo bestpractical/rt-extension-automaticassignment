@@ -1,0 +1,3 @@
+<&| /Widgets/TitleBox, title => loc('Ticket Status') &>
+<p>This chooser selects the user with the fewest number of active tickets. If multiple users have the same number of tickets, then the ticket is assigned randomly.</p>
+</&>
