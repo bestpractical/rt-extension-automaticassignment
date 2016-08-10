@@ -1,9 +1,33 @@
 <&| /Widgets/TitleBox, title => loc('Member of Role') &>
 <p>This filter selects eligible owners by their role membership. Only members of the following role, either on the queue or on the ticket itself, will be automatically assigned tickets.</p>
-<% $i %>
+
+<table>
+<tr>
+<td class="label"><label for="<% $prefix %>_role">Role:</label></td>
+<td class="value">
+<select id="<% $prefix %>_role" name="<% $prefix %>_role">
+<option value="">-</option>
+% for my $role (qw/AdminCc Cc Requestor/) {
+<option value="<% $role %>"><% $role %></option>
+% }
+% if ($custom_roles) {
+% while (my $role = $custom_roles->Next) {
+<option value="<% $role->Id %>"><% $role->Name %></option>
+% }
+% }
+</select>
+</td>
+</tr>
+</table>
 </&>
+
 <%INIT>
+my $custom_roles;
+if ( RT::Handle::cmp_version($RT::VERSION,'4.4.0') >= 0 ) {
+    $custom_roles = RT::CustomRoles->new($session{CurrentUser});
+    $custom_roles->UnLimit;
+}
 </%INIT>
 <%ARGS>
-$i
+$prefix
 </%ARGS>

@@ -1,3 +1,6 @@
 <&| /Widgets/TitleBox, title => loc('Random') &>
 <p>This chooser selects a random owner from the pool of eligible users.</p>
 </&>
+<%ARGS>
+$prefix
+</%ARGS>

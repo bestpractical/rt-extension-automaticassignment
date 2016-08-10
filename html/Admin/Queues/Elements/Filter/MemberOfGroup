@@ -1,9 +1,28 @@
 <&| /Widgets/TitleBox, title => loc('Member of Group') &>
 <p>This filter selects eligible owners by their group membership. Only members of the following group will be automatically assigned tickets.</p>
-<% $i %>
+
+% if ($groups->Count) {
+<table>
+<tr>
+<td class="label"><label for="<% $prefix %>_group">Group:</label></td>
+<td class="value">
+<select id="<% $prefix %>_group" name="<% $prefix %>_group">
+<option value="">-</option>
+% while (my $group = $groups->Next) {
+<option value="<% $group->Id %>"><% $group->Name %></option>
+% }
+</select>
+</td>
+</tr>
+</table>
+% } else {
+<p>No groups found.</p>
+% }
 </&>
 <%INIT>
+my $groups = RT::Groups->new($session{CurrentUser});
+$groups->LimitToUserDefinedGroups;
 </%INIT>
 <%ARGS>
-$i
+$prefix
 </%ARGS>

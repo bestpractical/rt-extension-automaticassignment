@@ -1,9 +1,40 @@
 <&| /Widgets/TitleBox, title => loc('Excluded Dates') &>
 <p>This filter selects eligible owners by datetime custom fields on users, meant for scheduled vacations. If the current date and time falls between the following two custom fields, the user will be excluded from automatic assignment.</p>
-<% $i %>
+
+% if ($user_cfs->Count) {
+<table>
+<tr>
+<td class="label"><label for="<% $prefix %>_begin">Begin Custom Field:</label></td>
+<td class="value">
+<select id="<% $prefix %>_begin" name="<% $prefix %>_begin">
+<option value="">-</option>
+% while (my $cf = $user_cfs->Next) {
+<option value="<% $cf->Id %>"><% $cf->Name %></option>
+% }
+</select>
+</td>
+</tr>
+<tr>
+<td class="label"><label for="<% $prefix %>_end">End Custom Field:</label></td>
+<td class="value">
+<select id="<% $prefix %>_end" name="<% $prefix %>_end">
+<option value="">-</option>
+% while (my $cf = $user_cfs->Next) {
+<option value="<% $cf->Id %>"><% $cf->Name %></option>
+% }
+</select>
+</td>
+</tr>
+</table>
+% } else {
+<p>No user custom fields found.</p>
+% }
 </&>
 <%INIT>
+my $user_cfs = RT::CustomFields->new($session{CurrentUser});
+$user_cfs->LimitToLookupType(RT::User->CustomFieldLookupType);
+$user_cfs->ApplySortOrder;
 </%INIT>
 <%ARGS>
-$i
+$prefix
 </%ARGS>
