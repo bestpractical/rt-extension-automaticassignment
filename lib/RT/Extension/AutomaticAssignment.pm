@@ -87,27 +87,27 @@ sub _ConfigForTicket {
     my $self = shift;
     my $ticket = shift;
 
-    my $queue = $ticket->QueueObj->Name;
-    my $config = RT->Config->Get('AutomaticAssignment');
-    if (!$config) {
+    my $queue = $ticket->QueueObj;
+    my $attr = $queue->FirstAttribute('AutomaticAssignment');
+    if (!$attr || !$attr->Content) {
         RT->Logger->error("No AutomaticAssignment config defined; automatic assignment cannot occur.");
         return;
     }
 
-    my %merged_config = %{ $config->{Queue}{ $queue } || {} };
+    my $config = $attr->Content;
 
     # filters not required, since the default list is "users who can own
     # tickets in this queue"
-    $merged_config{filters} ||= [];
+    $config->{filters} ||= [];
 
     # chooser is required
-    if (!$merged_config{chooser}) {
+    if (!$config->{chooser}) {
         RT->Logger->error("No AutomaticAssignment chooser defined for queue '$queue'; automatic assignment cannot occur.");
         return;
     }
 
     # load each filter class
-    for (@{ $merged_config{filters} }) {
+    for (@{ $config->{filters} }) {
         if (!ref($_)) {
             $_ = {
                 class => $self->_LoadedClass('Filter', $_),
@@ -122,16 +122,16 @@ sub _ConfigForTicket {
     }
 
     # load chooser class
-    if (!ref($merged_config{chooser})) {
-        $merged_config{chooser} = {
-            class => $self->_LoadedClass('Chooser', $merged_config{chooser}),
+    if (!ref($config->{chooser})) {
+        $config->{chooser} = {
+            class => $self->_LoadedClass('Chooser', $config->{chooser}),
         };
     }
     else {
-        $merged_config{chooser}{class} = $self->_LoadedClass('Chooser', $merged_config{chooser}{class});
+        $config->{chooser}{class} = $self->_LoadedClass('Chooser', $config->{chooser}{class});
     }
 
-    return \%merged_config;
+    return $config;
 }
 
 sub OwnerForTicket {
