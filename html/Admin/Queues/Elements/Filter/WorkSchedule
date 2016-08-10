@@ -1,4 +1,4 @@
-<&| /Widgets/TitleBox, title => loc('Business Hours') &>
+<&| /Widgets/TitleBox, title => loc('Work Schedule') &>
 <p>This filter selects eligible owners by their work schedule. The following user custom field decides which work schedule each user maintains. Administrators may update the <tt>%ServiceBusinessHours</tt> RT config for adding or modifying the available schedules.</p>
 
 % if ($user_cfs->Count) {

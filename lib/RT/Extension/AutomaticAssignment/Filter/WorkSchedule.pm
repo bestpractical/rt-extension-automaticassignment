@@ -1,4 +1,4 @@
-package RT::Extension::AutomaticAssignment::Filter::BusinessHours;
+package RT::Extension::AutomaticAssignment::Filter::WorkSchedule;
 use strict;
 use warnings;
 use base 'RT::Extension::AutomaticAssignment::Filter';
@@ -70,7 +70,7 @@ sub FilterOwnersForTicket {
         for my $user (@$users) {
             my $schedule = $user->FirstCustomFieldValue($config->{user_cf});
             if (!$schedule) {
-                RT->Logger->debug("No value for user CF '$config->{user_cf}' for user " . $user->Name . "; skipping from BusinessHours automatic assignment");
+                RT->Logger->debug("No value for user CF '$config->{user_cf}' for user " . $user->Name . "; skipping from WorkSchedule automatic assignment");
                 next;
             }
 
@@ -87,7 +87,7 @@ sub FilterOwnersForTicket {
         return \@eligible;
     }
     else {
-        die "Unable to filter BusinessHours; no 'user_cf' provided.";
+        die "Unable to filter WorkSchedule; no 'user_cf' provided.";
     }
 }
 
