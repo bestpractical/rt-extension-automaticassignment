@@ -27,6 +27,8 @@ INSTALLATION
         Automatic Reassignment, the automatic assignment will happen even if
         the ticket has an owner already.
 
+    Configure automatic assignment policies
+
 AUTHOR
     Best Practical Solutions, LLC <modules@bestpractical.com>
 

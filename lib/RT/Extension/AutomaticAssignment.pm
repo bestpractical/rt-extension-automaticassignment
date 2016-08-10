@@ -94,10 +94,7 @@ sub _ConfigForTicket {
         return;
     }
 
-    # merge the queue-specific config into the default config
-    my %merged_config = %{ $config->{Default} || {} };
-    $merged_config{ $_ } = $config->{QueueDefault}{ $queue }->{ $_ }
-        for keys %{ $config->{QueueDefault}{ $queue } || {} };
+    my %merged_config = %{ $config->{Queue}{ $queue } || {} };
 
     # filters not required, since the default list is "users who can own
     # tickets in this queue"
@@ -205,17 +202,6 @@ Reassignment scrip. For Automatic Reassignment, the automatic assignment
 will happen even if the ticket has an owner already.
 
 =item Configure automatic assignment policies
-
-    Set(%AutomaticAssignment_Choosers, (
-        Default => 'Random',
-        QueueDefaults => {
-            General => 'TicketStatus',
-            Review => {
-                class => 'TicketStatus',
-                ties => [ ['new', 'open'], 'stalled' ],
-            },
-        },
-    ));
 
 =back
 
