@@ -3,4 +3,5 @@
 </&>
 <%ARGS>
 $prefix
+$config
 </%ARGS>

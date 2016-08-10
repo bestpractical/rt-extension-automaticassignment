@@ -37,4 +37,5 @@ $user_cfs->ApplySortOrder;
 </%INIT>
 <%ARGS>
 $prefix
+$config
 </%ARGS>

@@ -25,4 +25,5 @@ $groups->LimitToUserDefinedGroups;
 </%INIT>
 <%ARGS>
 $prefix
+$config
 </%ARGS>

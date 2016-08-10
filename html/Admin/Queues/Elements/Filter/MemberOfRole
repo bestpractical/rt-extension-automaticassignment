@@ -30,4 +30,5 @@ if ( RT::Handle::cmp_version($RT::VERSION,'4.4.0') >= 0 ) {
 </%INIT>
 <%ARGS>
 $prefix
+$config
 </%ARGS>
