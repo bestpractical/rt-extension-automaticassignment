@@ -4,7 +4,7 @@ $i => 0
 $Queue => undef
 </%ARGS>
 <%INIT>
-$m->abort if !$Name || $Name =~ /\W/;
+$m->abort unless grep { $Name eq $_ } RT->Config->Get('AutomaticAssignmentFilters');
 
 my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 $QueueObj->Load( $Queue );
