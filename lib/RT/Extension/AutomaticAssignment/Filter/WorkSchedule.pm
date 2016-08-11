@@ -4,21 +4,6 @@ use warnings;
 use base 'RT::Extension::AutomaticAssignment::Filter';
 use Business::Hours;
 
-sub _UserCF {
-    my $class = shift;
-    my $id    = shift;
-
-    my $cf = RT::CustomField->new(RT->SystemUser);
-    $cf->LoadByCols(
-        id         => $id,
-        LookupType => RT::User->CustomFieldLookupType,
-    );
-    if (!$cf->Id) {
-        die "Unable to load User Custom Field '$id'";
-    }
-    return $cf;
-}
-
 sub _IsTimeWithinBusinessHours {
     my $class  = shift;
     my $time   = shift;
@@ -64,8 +49,6 @@ sub FilterOwnersForTicket {
     my $now = time;
 
     if ($config->{user_cf}) {
-        $class->_UserCF($config->{user_cf}); # validate user CF exists
-
         my @eligible;
         for my $user (@$users) {
             my $schedule = $user->FirstCustomFieldValue($config->{user_cf});

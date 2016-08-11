@@ -9,28 +9,24 @@ sub FilterOwnersForTicket {
     my $users  = shift;
     my $config = shift;
 
-    my $role_name = $config->{name}
-        or die "Unable to filter MemberOfRole; no name provided.";
+    my $role = $config->{role}
+        or die "Unable to filter MemberOfRole; no role provided.";
 
     my ($ticket_group, $queue_group);
 
-    if ($role_name eq 'AdminCc' || $role_name eq 'Cc') {
-        $ticket_group = $ticket->RoleGroup($role_name);
-        $queue_group = $ticket->QueueObj->RoleGroup($role_name);
-    }
-    elsif ($role_name eq 'Requestor' || $role_name eq 'Requestors') {
-        $ticket_group = $ticket->RoleGroup('Requestor');
+    if ($role eq 'AdminCc' || $role eq 'Cc' || $role eq 'Requestor') {
+        $ticket_group = $ticket->RoleGroup($role);
+        $queue_group = $ticket->QueueObj->RoleGroup($role);
     }
     elsif (RT::Handle::cmp_version($RT::VERSION,'4.4.0') >= 0) {
-        die "Unable to filter MemberOfRole role '$role_name'; custom roles require RT 4.4 or greater.";
+        die "Unable to filter MemberOfRole role '$role'; custom roles require RT 4.4 or greater.";
     }
     else {
-        my $roles = RT::CustomRoles->new( $ticket->CurrentUser );
-        $roles->Limit( FIELD => 'Name', VALUE => $role_name, CASESENSITIVE => 0 );
-        my $role = $roles->First;
+        my $customrole = RT::CustomRole->new( $ticket->CurrentUser );
+        $customrole->Load($role);
 
-        $ticket_group = $ticket->RoleGroup($role->GroupType);
-        $queue_group = $ticket->QueueObj->RoleGroup($role->GroupType);
+        $ticket_group = $ticket->RoleGroup($customrole->GroupType);
+        $queue_group = $ticket->QueueObj->RoleGroup($customrole->GroupType);
     }
 
     $users->WhoBelongToGroups(

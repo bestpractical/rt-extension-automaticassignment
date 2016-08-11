@@ -30,5 +30,6 @@ sub CanonicalizeConfig {
 
     return { group => $group };
 }
+
 1;
 

@@ -15,7 +15,7 @@ sub _LoadedClass {
     my $namespace = shift;
     my $name      = shift;
 
-    my $class = $name =~ /::/ ? $name : "RT::Extension::AutomaticAssignment::${namespace}::$name";
+    my $class = "RT::Extension::AutomaticAssignment::${namespace}::$name";
     $class->require or die $UNIVERSAL::require::ERROR;
     return $class;
 }
@@ -43,14 +43,9 @@ sub _EligibleOwnersForTicket {
     );
 
     for my $filter (@{ $config->{filters} }) {
-        if (ref($filter) eq 'CODE') {
-            $filter->($users, $ticket);
-        }
-        else {
-            my $class = $filter->{class};
-            $class->FilterOwnersForTicket($ticket, $users, $filter)
-                if !$class->FiltersUsersArray;
-        }
+        my $class = $self->_LoadedClass('Filter', $filter->{_name});
+        $class->FilterOwnersForTicket($ticket, $users, $filter)
+            if !$class->FiltersUsersArray;
     }
 
     return $users;
@@ -63,15 +58,9 @@ sub _FilterUsersArrayForTicket {
     my $config = shift;
 
     for my $filter (@{ $config->{filters} }) {
-        if (ref($filter) eq 'CODE') {
-            next;
-        }
-        else {
-            my $class = $filter->{class};
-            next unless $class->FiltersUsersArray;
-
-            $users = $class->FilterOwnersForTicket($ticket, $users, $filter);
-        }
+        my $class = $self->_LoadedClass('Filter', $filter->{_name});
+        $users = $class->FilterOwnersForTicket($ticket, $users, $filter)
+            if $class->FiltersUsersArray;
     }
 
     return $users;
@@ -83,7 +72,7 @@ sub _ChooseOwnerForTicket {
     my $users  = shift;
     my $config = shift;
 
-    my $class = $config->{chooser}{class};
+    my $class = $self->_LoadedClass('Chooser', $config->{chooser}{_name});
     return $class->ChooseOwnerForTicket($ticket, $users, $config->{chooser});
 }
 
@@ -108,31 +97,6 @@ sub _ConfigForTicket {
     if (!$config->{chooser}) {
         RT->Logger->error("No AutomaticAssignment chooser defined for queue '$queue'; automatic assignment cannot occur.");
         return;
-    }
-
-    # load each filter class
-    for (@{ $config->{filters} }) {
-        if (!ref($_)) {
-            $_ = {
-                class => $self->_LoadedClass('Filter', $_),
-            };
-        }
-        elsif (ref($_) eq 'CODE') {
-            # nothing to do
-        }
-        else {
-            $_->{class} = $self->_LoadedClass('Filter', $_->{class});
-        }
-    }
-
-    # load chooser class
-    if (!ref($config->{chooser})) {
-        $config->{chooser} = {
-            class => $self->_LoadedClass('Chooser', $config->{chooser}),
-        };
-    }
-    else {
-        $config->{chooser}{class} = $self->_LoadedClass('Chooser', $config->{chooser}{class});
     }
 
     return $config;

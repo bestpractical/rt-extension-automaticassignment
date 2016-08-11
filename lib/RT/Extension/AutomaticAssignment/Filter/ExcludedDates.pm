@@ -71,7 +71,7 @@ sub FilterOwnersForTicket {
         );
     }
     else {
-        die "Unable to filter ExcludedDates; no 'except_between' provided.";
+        die "Unable to filter ExcludedDates; both 'begin' and 'end' must be provided.";
     }
 }
 
