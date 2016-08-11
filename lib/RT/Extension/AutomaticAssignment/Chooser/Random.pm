@@ -12,5 +12,7 @@ sub ChooseOwnerForTicket {
     return $users[rand @users];
 }
 
+sub Description { "Random" }
+
 1;
 

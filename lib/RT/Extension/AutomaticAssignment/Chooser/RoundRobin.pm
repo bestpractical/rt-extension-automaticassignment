@@ -17,7 +17,7 @@ sub ChooseOwnerForTicket {
     # was the longest time ago
     my $owner = reduce {
         ($a->FirstAttribute($attr)||0) < ($b->FirstAttribute($attr)||0) ? $a : $b
-    } @$users;
+    } @users;
 
     if ($owner) {
         $owner->SetAttribute(Name => $attr, Content => time);
@@ -26,6 +26,7 @@ sub ChooseOwnerForTicket {
     return $owner;
 }
 
-1;
+sub Description { "Round Robin" }
 
+1;
 

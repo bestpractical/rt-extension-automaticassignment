@@ -27,6 +27,7 @@ sub ChooseOwnerForTicket {
     return reduce { $timeleft_by_owner{$a->id} < $timeleft_by_owner{$b->id} ? $a : $b } @users;
 }
 
-1;
+sub Description { "Time Left" }
 
+1;
 

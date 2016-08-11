@@ -2,32 +2,80 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" class="automatic-assignment" action="AutomaticAssignment.html">
+<form method="post" id="automatic-assignment" class="automatic-assignment" action="AutomaticAssignment.html">
 <input type="hidden" class="hidden" name="id" value="<%$QueueObj->Id%>" />
+
+<div class="filters">
 
 <h1>Filters</h1>
 
-% my $i = 0;
-% for my $filter (@{ $config->{filters} }) {
-%    ++$i;
-%    my $name = "WorkSchedule";
-%    my $path = "/Admin/Queues/Elements/Filter/$name";
-%    my $prefix = "Filter_${name}_$i";
+<p><i>Filters reduce the pool of eligible owners. Each user must fulfill the requirements of all the filters below to be included in this queue's automatic assignment.</i></p>
 
-%    $m->comp($path, prefix => $prefix, config => $filter);
+<select name="FilterType">
+<option value="">-</option>
+
+% for my $filter (RT->Config->Get('AutomaticAssignmentFilters')) {
+% my $class = "RT::Extension::AutomaticAssignment::Filter::$filter";
+% unless ($class->require) {
+%     RT->Logger->error("Couldn't load class '$class': $@");
+%     $m->abort;
+% }
+<option value="<% $filter %>"><% $class->Description %></option>
 % }
 
-<select>
-<option value="">-</option>
-<option value="WorkSchedule">Work Schedule</option>
-<option value="ExcludedDates">Excluded Dates</option>
-<option value="MemberOfGroup">Member of Group</option>
-<option value="MemberOfRole">Member of Role</option>
-
 </select>
-<input type="submit" class="button" value="Add Filter">
+
+<input type="submit" class="button" name="AddFilter" value="Add Filter">
+
+% my $i = 0;
+% my $filters_value = "";
+% for my $filter (@{ $config->{filters} }) {
+%    ++$i;
+%    my $name = $filter->{_name};
+%    my $path = "/Admin/Queues/Elements/Filter/$name";
+%    my $prefix = "Filter_${name}_$i";
+%    $filters_value .= "$prefix,";
+
+%    $m->comp($path, prefix => $prefix, config => $filter, queue => $QueueObj);
+% }
+
+<input type="hidden" class="hidden" name="Filters" value="<% $filters_value %>" />
+
+</div>
+
+<hr />
+
+<div class="chooser">
 
 <h1>Chooser</h1>
+
+<p><i>A chooser selects a single owner from the filtered set of eligible users.</i></p>
+
+% my $chooser_config = $config->{chooser};
+% my $name = $chooser_config->{_name};
+% my $prefix = "Chooser_${name}";
+
+<select name="ChooserType">
+
+% for my $chooser (RT->Config->Get('AutomaticAssignmentChoosers')) {
+% my $class = "RT::Extension::AutomaticAssignment::Chooser::$chooser";
+% unless ($class->require) {
+%     RT->Logger->error("Couldn't load class '$class': $@");
+%     $m->abort;
+% }
+<option <% $name eq $chooser ? "selected" : "" %> value="<% $chooser %>"><% $class->Description %></option>
+% }
+
+</select>
+
+% my $path = "/Admin/Queues/Elements/Chooser/$name";
+% $m->comp($path, prefix => $prefix, config => $chooser_config, queue => $QueueObj);
+
+<input type="hidden" class="hidden" name="Chooser" value="<% $prefix %>" />
+
+</div>
+
+<& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
 
 </form>
 
@@ -37,11 +85,71 @@ my @results;
 my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 $QueueObj->Load($id) || Abort(loc("Couldn't load queue", $id));
 
-my $attr = $QueueObj->FirstAttribute('AutomaticAssignment');
-my $config = $attr ? $attr->Content : {};
-
 my $title = loc('Automatic Assignment for queue [_1]', $QueueObj->Name);
+
+if ($Update) {
+    my %queue_config;
+
+    for my $filter_prefix (split /,/, $Filters) {
+        my @config_keys = grep { s/^\Q$filter_prefix\E_// ? $_ : () } keys %ARGS;
+        my %args = map { $_ => $ARGS{"${filter_prefix}_$_"} } @config_keys;
+        my $name = delete $args{ClassName};
+
+        next unless grep { $_ eq $name } RT->Config->Get('AutomaticAssignmentFilters');
+
+        my $class = "RT::Extension::AutomaticAssignment::Filter::$name";
+        unless ($class->require) {
+            RT->Logger->error("Couldn't load class '$class': $@");
+            $m->abort;
+        }
+
+        my $config = $class->CanonicalizeConfig(\%args);
+        $config->{_name} = $name;
+
+        push @{ $queue_config{filters} }, $config;
+    }
+
+    {
+        my @config_keys = grep { s/^\Q$Chooser\E_// ? $_ : () } keys %ARGS;
+        my %args = map { $_ => $ARGS{"${Chooser}_$_"} } @config_keys;
+        my $name = delete $args{ClassName};
+
+        next unless grep { $_ eq $name } RT->Config->Get('AutomaticAssignmentChoosers');
+
+        my $class = "RT::Extension::AutomaticAssignment::Chooser::$name";
+        unless ($class->require) {
+            RT->Logger->error("Couldn't load class '$class': $@");
+            $m->abort;
+        }
+
+        my $config = $class->CanonicalizeConfig(\%args);
+        $config->{_name} = $name;
+
+        $queue_config{chooser} = $config;
+    }
+
+    my ($ok, $msg) = $QueueObj->SetAttribute(
+        Name    => 'AutomaticAssignment',
+        Content => \%queue_config,
+    );
+
+    if ($ok) {
+        push @results, 'Automatic assignment updated';
+    }
+    else {
+        push @results, $msg;
+    }
+}
+
+my $attr = $QueueObj->FirstAttribute('AutomaticAssignment');
+my $config = $attr ? $attr->Content : {
+    filters => [],
+    chooser => { _name => 'Random' },
+};
 </%INIT>
 <%ARGS>
 $id => undef
+$Update => undef
+$Filters => undef
+$Chooser => undef
 </%ARGS>

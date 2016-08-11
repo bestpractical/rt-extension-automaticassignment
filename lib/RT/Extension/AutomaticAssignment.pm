@@ -5,6 +5,10 @@ use warnings;
 our $VERSION = '0.01';
 
 RT->AddStyleSheets("automatic-assignment.css");
+RT->AddJavaScript("automatic-assignment.js");
+
+$RT::Config::META{AutomaticAssignmentFilters}{Type} = 'ARRAY';
+$RT::Config::META{AutomaticAssignmentChoosers}{Type} = 'ARRAY';
 
 sub _LoadedClass {
     my $self      = shift;

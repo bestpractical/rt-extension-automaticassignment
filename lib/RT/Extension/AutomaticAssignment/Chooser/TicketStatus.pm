@@ -111,5 +111,7 @@ sub ChooseOwnerForTicket {
     return $fewest[rand @fewest];
 }
 
+sub Description { "Ticket Status" }
+
 1;
 

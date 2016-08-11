@@ -6,15 +6,15 @@ use Business::Hours;
 
 sub _UserCF {
     my $class = shift;
-    my $name = shift;
+    my $id    = shift;
 
     my $cf = RT::CustomField->new(RT->SystemUser);
-    $cf->LoadByName(
-        Name       => $name,
+    $cf->LoadByCols(
+        id         => $id,
         LookupType => RT::User->CustomFieldLookupType,
     );
     if (!$cf->Id) {
-        die "Unable to load User Custom Field named '$name'";
+        die "Unable to load User Custom Field '$id'";
     }
     return $cf;
 }
@@ -89,6 +89,18 @@ sub FilterOwnersForTicket {
     else {
         die "Unable to filter WorkSchedule; no 'user_cf' provided.";
     }
+}
+
+sub Description { "Work Schedule" }
+
+sub CanonicalizeConfig {
+    my $class = shift;
+    my $input = shift;
+
+    my $cf = $input->{user_cf} || 0;
+    $cf =~ s/[^0-9]//g; # allow only numeric id
+
+    return { user_cf => $cf };
 }
 
 1;

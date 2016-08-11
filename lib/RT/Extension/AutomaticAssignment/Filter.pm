@@ -12,6 +12,17 @@ sub FiltersUsersArray {
     return 0;
 }
 
-1;
+sub Description {
+    my $class = shift;
+    return $class;
+}
 
+sub CanonicalizeConfig {
+    my $class = shift;
+    my $config = shift;
+
+    return {};
+}
+
+1;
 

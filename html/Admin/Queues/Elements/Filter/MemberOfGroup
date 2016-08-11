@@ -1,4 +1,4 @@
-<&| /Widgets/TitleBox, title => loc('Member of Group') &>
+<&| /Admin/Queues/Elements/SortableBox, prefix => $prefix, is_filter => 1, class_name => 'MemberOfGroup', &>
 <p>This filter selects eligible owners by their group membership. Only members of the following group will be automatically assigned tickets.</p>
 
 % if ($groups->Count) {
@@ -9,7 +9,7 @@
 <select id="<% $prefix %>_group" name="<% $prefix %>_group">
 <option value="">-</option>
 % while (my $group = $groups->Next) {
-<option value="<% $group->Id %>"><% $group->Name %></option>
+<option <% ($config->{group}||0) == $group->Id ? "selected" : "" %> value="<% $group->Id %>"><% $group->Name %></option>
 % }
 </select>
 </td>
@@ -26,4 +26,5 @@ $groups->LimitToUserDefinedGroups;
 <%ARGS>
 $prefix
 $config
+$queue
 </%ARGS>

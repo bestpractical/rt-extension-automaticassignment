@@ -40,5 +40,19 @@ sub FilterOwnersForTicket {
     );
 }
 
+sub Description { "Member of Role" }
+
+sub CanonicalizeConfig {
+    my $class = shift;
+    my $input = shift;
+
+    my $role = $input->{role};
+    unless ($role eq 'Cc' || $role eq 'AdminCc' || $role eq 'Requestor') {
+        $role =~ s/[^0-9]//g; # allow only numeric id
+    }
+
+    return { role => $role };
+}
+
 1;
 

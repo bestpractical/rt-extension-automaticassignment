@@ -9,27 +9,26 @@ sub FilterOwnersForTicket {
     my $users  = shift;
     my $config = shift;
 
-    my $group_name;
-
-    if ($config->{name}) {
-        $group_name = $config->{name};
-    }
-    elsif ($config->{queue_cf}) {
-        $group_name = $ticket->QueueObj->FirstCustomFieldValue($config->{queue_cf});
-    }
-    else {
-        die "Unable to filter MemberOfGroup; no name or queue_cf provided.";
-    }
-
     my $group = RT::Group->new($ticket->CurrentUser);
-    $group->LoadUserDefinedGroup($group_name);
+    $group->LoadUserDefinedGroup($config->{group});
 
     if (!$group->Id) {
-        die "Unable to filter MemberOfGroup; can't load group '$group_name'";
+        die "Unable to filter MemberOfGroup; can't load group '$config->{group}'";
     }
 
     $users->MemberOfGroup($group->Id);
 }
 
+sub Description { "Member of Group" }
+
+sub CanonicalizeConfig {
+    my $class = shift;
+    my $input = shift;
+
+    my $group = $input->{group};
+    $group =~ s/[^0-9]//g; # allow only numeric id
+
+    return { group => $group };
+}
 1;
 
