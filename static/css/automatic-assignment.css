@@ -48,3 +48,8 @@ form.automatic-assignment {
 .sortable-box .remove {
     float: right;
 }
+
+.sortable-box .remove img {
+    height: 1em;
+    width: 1em;
+}

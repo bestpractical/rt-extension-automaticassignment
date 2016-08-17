@@ -3,7 +3,7 @@
 <input type="hidden" class="hidden" name="<% $prefix %>_ClassName" value="<% $class_name %>" />
 <h3><% $class->Description %>
 % if ($allow_remove) {
-<a href="#" class="remove">(x)</a>
+<a href="#" class="remove"><img src="<% RT->Config->Get('WebPath') %>/static/images/remove.png"></a>
 % }
 </h3>
 <div class="inner">
