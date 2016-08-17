@@ -19,7 +19,7 @@ sub ChooseOwnerForTicket {
     # each owner except for nobody
     my %by_owner;
     while (my $ticket = $tickets->Next) {
-        next if $ticket->Owner = RT->Nobody->id;
+        next if $ticket->Owner == RT->Nobody->id;
         $by_owner{ $ticket->Owner }++;
     }
 
@@ -27,7 +27,7 @@ sub ChooseOwnerForTicket {
     my @fewest;
 
     for my $user (@users) {
-        my $count = $by_owner{ $user->Id };
+        my $count = $by_owner{ $user->Id } || 0;
 
         # either the first user we've seen, or this user
         # has fewer tickets than anyone else we've seen this round
@@ -40,13 +40,9 @@ sub ChooseOwnerForTicket {
         }
     }
 
-    # found exactly one user, so return this user as the owner
-    if (@fewest == 1) {
-        return $fewest[0];
-    }
-
     # all remaining users have the exact same number of active tickets, so
-    # pick a random one
+    # pick a random one. if there is only one remaining, it will still pick
+    # that one
     return $fewest[rand @fewest];
 }
 
