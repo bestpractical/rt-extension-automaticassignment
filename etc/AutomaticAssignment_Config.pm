@@ -6,9 +6,9 @@ Set($AutomaticAssignmentFilters, [qw(
 )]) unless $AutomaticAssignmentFilters;
 
 Set($AutomaticAssignmentChoosers, [qw(
+    ActiveTickets
     Random
     RoundRobin
-    TicketStatus
     TimeLeft
 )]) unless $AutomaticAssignmentChoosers;
 
