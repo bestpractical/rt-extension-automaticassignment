@@ -17,7 +17,7 @@ sub ChooseOwnerForTicket {
 
     my %timeleft_by_owner;
     while (my $ticket = $tickets->Next) {
-        next if $ticket->Owner = RT->Nobody->id;
+        next if $ticket->Owner == RT->Nobody->id;
         my $time_left = $ticket->TimeLeft || ($ticket->TimeEstimated - $ticket->TimeWorked);
         next if $time_left < 0;
 

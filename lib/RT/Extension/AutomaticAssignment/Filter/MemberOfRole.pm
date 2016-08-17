@@ -18,7 +18,7 @@ sub FilterOwnersForTicket {
         $ticket_group = $ticket->RoleGroup($role);
         $queue_group = $ticket->QueueObj->RoleGroup($role);
     }
-    elsif (RT::Handle::cmp_version($RT::VERSION,'4.4.0') >= 0) {
+    elsif (RT::Handle::cmp_version($RT::VERSION,'4.4.0') < 0) {
         die "Unable to filter MemberOfRole role '$role'; custom roles require RT 4.4 or greater.";
     }
     else {

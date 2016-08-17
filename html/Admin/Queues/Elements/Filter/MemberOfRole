@@ -12,7 +12,7 @@
 % }
 % if ($custom_roles) {
 % while (my $role = $custom_roles->Next) {
-<option <% ($config->{role}||0) == $role->Id ? "selected" : "" %> value="<% $role->Id %>"><% $role->Name %></option>
+<option <% ($config->{role}||0) eq $role->Id ? "selected" : "" %> value="<% $role->Id %>"><% $role->Name %></option>
 % }
 % }
 </select>
