@@ -82,5 +82,16 @@ jQuery(function () {
             refreshFiltersField();
         });
     });
+
+    filterList.sortable({
+        axis: 'y',
+        items: '.sortable-box',
+        containment: 'parent',
+        placeholder: 'sortable-placeholder',
+        forcePlaceholderSize: true,
+        update: function (event, ui) {
+            refreshFiltersField();
+        }
+    });
 });
 

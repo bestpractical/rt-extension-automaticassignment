@@ -4,6 +4,8 @@ use warnings;
 
 our $VERSION = '0.01';
 
+RT->AddJavaScript('jquery.ui.sortable.js');
+
 RT->AddStyleSheets("automatic-assignment.css");
 RT->AddJavaScript("automatic-assignment.js");
 
