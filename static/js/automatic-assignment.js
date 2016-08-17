@@ -9,6 +9,7 @@ jQuery(function () {
     var addFilterButton = form.find('input.button[name=AddFilter]');
 
     var i = filterList.find('.sortable-box').length;
+    var queueId = form.find('input[name=id]').val();
 
     var refreshFiltersField = function () {
         var filters = "";
@@ -25,6 +26,7 @@ jQuery(function () {
         if (filter) {
             var params = {
                 Name: filter,
+                Queue: queueId,
                 i: ++i
             };
 
@@ -56,7 +58,8 @@ jQuery(function () {
         e.preventDefault();
         var chooserName = jQuery(this).val();
         var params = {
-            Name: chooserName
+            Name: chooserName,
+            Queue: queueId
         };
 
         chooserContainer.addClass('replacing');
