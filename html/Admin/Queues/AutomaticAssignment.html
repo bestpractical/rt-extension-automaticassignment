@@ -27,6 +27,10 @@
 
 <input type="submit" class="button" name="AddFilter" value="Add Filter">
 
+<span class="loading">Loading...</span>
+
+<div class="filter-list">
+
 % my $i = 0;
 % my $filters_value = "";
 % for my $filter (@{ $config->{filters} }) {
@@ -38,6 +42,8 @@
 
 %    $m->comp($path, prefix => $prefix, config => $filter, queue => $QueueObj);
 % }
+
+</div>
 
 <input type="hidden" class="hidden" name="Filters" value="<% $filters_value %>" />
 
@@ -67,6 +73,8 @@
 % }
 
 </select>
+
+<span class="loading">Loading...</span>
 
 % my $path = "/Admin/Queues/Elements/Chooser/$name";
 % $m->comp($path, prefix => $prefix, config => $chooser_config, queue => $QueueObj);

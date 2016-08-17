@@ -23,3 +23,19 @@ form.automatic-assignment {
 .sortable-box select {
     min-width: 10em;
 }
+
+.replacing .sortable-box {
+    -webkit-filter: grayscale(80%);
+    filter: grayscale(80%);
+    opacity: 0.5;
+}
+
+.filters .loading,
+.chooser .loading {
+    visibility: hidden;
+}
+
+.filters.adding .loading,
+.chooser.replacing .loading {
+    visibility: visible;
+}

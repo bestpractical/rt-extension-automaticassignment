@@ -3,19 +3,23 @@ jQuery(function () {
     var addFilterSelect = form.find('select[name=FilterType]');
     var filtersField = form.find('input[name=Filters]');
     var chooserField = form.find('input[name=Chooser]');
+    var filterContainer = form.find('.filters');
+    var chooserContainer = form.find('.chooser');
+    var filterList = form.find('.filter-list');
+    var addFilterButton = form.find('input.button[name=AddFilter]');
 
-    var i = form.find('.filters .sortable-box').length;
+    var i = filterList.find('.sortable-box').length;
 
     var refreshFiltersField = function () {
         var filters = "";
-        form.find('.filters .sortable-box').each(function () {
+        filterList.find('.sortable-box').each(function () {
             filters += jQuery(this).data('prefix') + ',';
         });
 
         filtersField.val(filters);
     };
 
-    form.find('input.button[name=AddFilter]').click(function (e) {
+    addFilterButton.click(function (e) {
         e.preventDefault();
         var filter = addFilterSelect.val();
         if (filter) {
@@ -24,13 +28,19 @@ jQuery(function () {
                 i: ++i
             };
 
+            filterContainer.addClass('adding');
+            addFilterSelect.attr('disabled', true);
+            addFilterButton.attr('disabled', true);
+
             jQuery.ajax({
                 url: RT.Config.WebHomePath + "/Helpers/AddFilter",
                 data: params,
                 success: function (html) {
-                    form.find('.filters').append(html);
+                    jQuery(html).prependTo(filterList).hide().slideDown();
                     refreshFiltersField();
-                    addFilterSelect.val('');
+                    filterContainer.removeClass('adding');
+                    addFilterSelect.val('').attr('disabled', false);
+                    addFilterButton.attr('disabled', false);
                 },
                 error: function (xhr, reason) {
                     alert(reason);
@@ -44,18 +54,21 @@ jQuery(function () {
 
     form.find('select[name=ChooserType]').change(function (e) {
         e.preventDefault();
-        var chooser = jQuery(this).val();
+        var chooserName = jQuery(this).val();
         var params = {
-            Name: chooser
+            Name: chooserName
         };
-        jQuery('.chooser .sortable-box').empty();
+
+        chooserContainer.addClass('replacing');
+        chooserContainer.find('.sortable-box :input').attr('disabled', true);
 
         jQuery.ajax({
             url: RT.Config.WebHomePath + "/Helpers/SelectChooser",
             data: params,
             success: function (html) {
-                form.find('.chooser .sortable-box').replaceWith(html);
-                chooserField.val('Chooser_' + chooser);
+                chooserContainer.find('.sortable-box').replaceWith(html);
+                chooserContainer.removeClass('replacing');
+                chooserField.val('Chooser_' + chooserName);
             },
             error: function (xhr, reason) {
                 alert(reason);
