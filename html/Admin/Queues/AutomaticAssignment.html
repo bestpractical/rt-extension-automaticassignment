@@ -154,6 +154,26 @@ my $config = $attr ? $attr->Content : {
     filters => [],
     chooser => { _name => 'Random' },
 };
+
+my $scrips = RT::Scrips->new($session{'CurrentUser'});
+$scrips->LimitToQueue($id);
+$scrips->LimitToGlobal;
+my $scripactions = $scrips->Join(
+    ALIAS1 => 'main',
+    FIELD1 => 'ScripAction',
+    TABLE2 => 'ScripActions',
+    FIELD2 => 'id',
+);
+$scrips->Limit(
+    ALIAS    => $scripactions,
+    FIELD    => 'ExecModule',
+    OPERATOR => 'IN',
+    VALUE    => ['AutomaticAssignment', 'AutomaticReassignment'],,
+);
+
+if ($scrips->Count == 0) {
+    push @results, "No scrips for automatic assignment are applied to this queue. Please see the AutomaticAssignment documentation for setup instructions.";
+}
 </%INIT>
 <%ARGS>
 $id => undef
