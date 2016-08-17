@@ -39,3 +39,7 @@ form.automatic-assignment {
 .chooser.replacing .loading {
     visibility: visible;
 }
+
+.sortable-box .remove {
+    float: right;
+}

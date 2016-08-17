@@ -1,7 +1,11 @@
 <div data-prefix="<% $prefix %>" class="sortable-box">
 <input type="hidden" class="hidden" name="<% $prefix %>" value="1" />
 <input type="hidden" class="hidden" name="<% $prefix %>_ClassName" value="<% $class_name %>" />
-<h3><% $class->Description %></h3>
+<h3><% $class->Description %>
+% if ($allow_remove) {
+<a href="#" class="remove">(x)</a>
+% }
+</h3>
 <div class="inner">
 <% $m->content | n %>
 </div>
@@ -19,6 +23,8 @@ unless ($class->require) {
     RT->Logger->error("Couldn't load class '$class': $@");
     $m->abort;
 }
+
+my $allow_remove = $is_filter;
 </%INIT>
 <%ARGS>
 $is_filter

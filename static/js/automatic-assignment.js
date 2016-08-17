@@ -75,5 +75,12 @@ jQuery(function () {
             }
         });
     });
+
+    form.on('click', '.sortable-box .remove', function () {
+        jQuery(this).closest('.sortable-box').slideUp(400, function () {
+            jQuery(this).remove();
+            refreshFiltersField();
+        });
+    });
 });
 
