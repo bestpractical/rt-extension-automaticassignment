@@ -40,6 +40,16 @@ sub ChooseOwnerForTicket {
         }
     }
 
+    if (@fewest > 1) {
+        RT->Logger->info("AutomaticAssignment for #" . $ticket->Id . ": selecting randomly from " . scalar(@fewest) . " users with " . ($fewest_ticket_count||0) . " active tickets: " . (join ', ', map { $_->Name } @fewest));
+    }
+    elsif (@fewest == 1) {
+        RT->Logger->info("AutomaticAssignment for #" . $ticket->Id . ": selecting single user " . $fewest[0]->Name . " with " . scalar(@fewest) . " active tickets");
+    }
+    elsif (@fewest == 0) {
+        RT->Logger->info("AutomaticAssignment for #" . $ticket->Id . ": no users with active tickets; bailing");
+    }
+
     # all remaining users have the exact same number of active tickets, so
     # pick a random one. if there is only one remaining, it will still pick
     # that one
