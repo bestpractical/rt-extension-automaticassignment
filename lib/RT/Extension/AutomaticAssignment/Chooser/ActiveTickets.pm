@@ -43,7 +43,7 @@ sub ChooseOwnerForTicket {
         RT->Logger->info("AutomaticAssignment for #" . $ticket->Id . ": selecting randomly from " . scalar(@fewest) . " users with " . ($fewest_ticket_count||0) . " active tickets: " . (join ', ', map { $_->Name } @fewest));
     }
     elsif (@fewest == 1) {
-        RT->Logger->info("AutomaticAssignment for #" . $ticket->Id . ": selecting single user " . $fewest[0]->Name . " with " . scalar(@fewest) . " active tickets");
+        RT->Logger->info("AutomaticAssignment for #" . $ticket->Id . ": selecting single user " . $fewest[0]->Name . " with " . ($fewest_ticket_count||0) . " active tickets");
     }
     elsif (@fewest == 0) {
         RT->Logger->info("AutomaticAssignment for #" . $ticket->Id . ": no users with active tickets; bailing");
