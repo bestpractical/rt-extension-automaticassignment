@@ -22,6 +22,27 @@ sub _LoadedClass {
     return $class;
 }
 
+sub _LogFilteredUsers {
+    my $self   = shift;
+    my $ticket = shift;
+    my $users  = shift;
+    my $filter = shift;
+
+    my $description;
+    if (ref($filter)) {
+        my %config = %$filter;
+        my $name = delete $config{_name};
+        $description = "after filter $name\[" . (join ', ', map { "$_:$config{$_}" } keys %config) . "\]";
+    }
+    else {
+        $description = $filter;
+    }
+
+    my $count = @{ ref($users) eq 'ARRAY' ? $users : $users->ItemsArrayRef };
+    my $names = $count < 20 ? join ', ', map { $_->Name } @{ ref($users) eq 'ARRAY' ? $users : $users->ItemsArrayRef } : '(too many to list)';
+    RT->Logger->info("AutomaticAssignment for #" . $ticket->Id . ": $count users $description: $names");
+}
+
 sub _EligibleOwnersForTicket {
     my $self   = shift;
     my $ticket = shift;
@@ -34,10 +55,14 @@ sub _EligibleOwnersForTicket {
         VALUE    => [ RT->System->id, RT->Nobody->id ],
     );
 
+    $self->_LogFilteredUsers($ticket, $users, 'from initial collection');
+
     for my $filter (@{ $config->{filters} }) {
         my $class = $self->_LoadedClass('Filter', $filter->{_name});
-        $class->FilterOwnersForTicket($ticket, $users, $filter)
-            if !$class->FiltersUsersArray;
+        if (!$class->FiltersUsersArray) {
+            $class->FilterOwnersForTicket($ticket, $users, $filter);
+            $self->_LogFilteredUsers($ticket, $users, $filter);
+        }
     }
 
     return $users;
@@ -51,8 +76,10 @@ sub _FilterUsersArrayForTicket {
 
     for my $filter (@{ $config->{filters} }) {
         my $class = $self->_LoadedClass('Filter', $filter->{_name});
-        $users = $class->FilterOwnersForTicket($ticket, $users, $filter)
-            if $class->FiltersUsersArray;
+        if ($class->FiltersUsersArray) {
+            $users = $class->FilterOwnersForTicket($ticket, $users, $filter);
+            $self->_LogFilteredUsers($ticket, $users, $filter);
+        }
     }
 
     return $users;
@@ -115,7 +142,11 @@ sub OwnerForTicket {
 
     my @users = @{ $users->ItemsArrayRef };
 
+    $self->_LogFilteredUsers($ticket, \@users, 'after OwnTicket right check');
+
     @users = @{ $self->_FilterUsersArrayForTicket($ticket, \@users, $config) };
+
+    $self->_LogFilteredUsers($ticket, \@users, 'before Chooser');
 
     my $user = $self->_ChooseOwnerForTicket($ticket, \@users, $config);
 
