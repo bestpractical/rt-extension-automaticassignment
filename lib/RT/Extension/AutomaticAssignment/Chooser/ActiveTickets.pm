@@ -19,7 +19,6 @@ sub ChooseOwnerForTicket {
     # each owner except for nobody
     my %by_owner;
     while (my $ticket = $tickets->Next) {
-        next if $ticket->Owner == RT->Nobody->id;
         $by_owner{ $ticket->Owner }++;
     }
 
