@@ -22,16 +22,6 @@ sub _LoadedClass {
     return $class;
 }
 
-sub _UnfilteredOwnersForTicket {
-    my $self   = shift;
-    my $ticket = shift;
-
-    my $users = RT::Users->new(RT->SystemUser);
-    $users->LimitToPrivileged;
-
-    return $users;
-}
-
 sub _EligibleOwnersForTicket {
     my $self   = shift;
     my $ticket = shift;
