@@ -121,6 +121,29 @@ sub _ConfigForTicket {
     return $config;
 }
 
+sub _ScripsForQueue {
+    my $self = shift;
+    my $queue = shift;
+
+    my $scrips = RT::Scrips->new($queue->CurrentUser);
+    $scrips->LimitToQueue($queue->Id);
+    $scrips->LimitToGlobal;
+    my $scripactions = $scrips->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'ScripAction',
+        TABLE2 => 'ScripActions',
+        FIELD2 => 'id',
+    );
+    $scrips->Limit(
+        ALIAS    => $scripactions,
+        FIELD    => 'ExecModule',
+        OPERATOR => 'IN',
+        VALUE    => ['AutomaticAssignment', 'AutomaticReassignment'],
+    );
+
+    return $scrips;
+}
+
 sub OwnerForTicket {
     my $self   = shift;
     my $ticket = shift;
