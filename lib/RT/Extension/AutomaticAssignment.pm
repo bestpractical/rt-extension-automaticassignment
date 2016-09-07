@@ -48,41 +48,47 @@ sub _EligibleOwnersForTicket {
     my $ticket = shift;
     my $config = shift;
 
-    my $users = RT::Users->new(RT->SystemUser);
-    $users->Limit(
+    my $user_collection = RT::Users->new(RT->SystemUser);
+    $user_collection->Limit(
         FIELD    => 'id',
         OPERATOR => 'NOT IN',
         VALUE    => [ RT->System->id, RT->Nobody->id ],
     );
 
-    $self->_LogFilteredUsers($ticket, $users, 'from initial collection');
+    $self->_LogFilteredUsers($ticket, $user_collection, 'from initial collection');
 
     for my $filter (@{ $config->{filters} }) {
         my $class = $self->_LoadedClass('Filter', $filter->{_name});
         if (!$class->FiltersUsersArray) {
-            $class->FilterOwnersForTicket($ticket, $users, $filter);
-            $self->_LogFilteredUsers($ticket, $users, $filter);
+            $class->FilterOwnersForTicket($ticket, $user_collection, $filter);
+            $self->_LogFilteredUsers($ticket, $user_collection, $filter);
         }
     }
 
-    return $users;
-}
+    # this has to come very late due to how it's implemented as replacing
+    # the collection (using rebless) with a DBIx::SearchBuilder::Union
+    $user_collection->WhoHaveRight(
+        Right               => 'OwnTicket',
+        Object              => $ticket,
+        IncludeSystemRights => 1,
+        IncludeSuperusers   => 1,
+    );
 
-sub _FilterUsersArrayForTicket {
-    my $self   = shift;
-    my $ticket = shift;
-    my $users  = shift;
-    my $config = shift;
+    my @user_list = @{ $user_collection->ItemsArrayRef };
+
+    $self->_LogFilteredUsers($ticket, \@user_list, 'after OwnTicket right check');
 
     for my $filter (@{ $config->{filters} }) {
         my $class = $self->_LoadedClass('Filter', $filter->{_name});
         if ($class->FiltersUsersArray) {
-            $users = $class->FilterOwnersForTicket($ticket, $users, $filter);
-            $self->_LogFilteredUsers($ticket, $users, $filter);
+            $user_list = $class->FilterOwnersForTicket($ticket, $user_list, $filter);
+            $self->_LogFilteredUsers($ticket, $user_list, $filter);
         }
     }
 
-    return $users;
+    $self->_LogFilteredUsers($ticket, \@user_list, 'after all filtering');
+
+    return \@user_list;
 }
 
 sub _ChooseOwnerForTicket {
@@ -203,24 +209,7 @@ sub OwnerForTicket {
     my $users = $self->_EligibleOwnersForTicket($ticket, $config);
     return if !$users;
 
-    # this has to come very late due to how it's implemented as replacing
-    # the collection (using rebless) with a DBIx::SearchBuilder::Union
-    $users->WhoHaveRight(
-        Right               => 'OwnTicket',
-        Object              => $ticket,
-        IncludeSystemRights => 1,
-        IncludeSuperusers   => 1,
-    );
-
-    my @users = @{ $users->ItemsArrayRef };
-
-    $self->_LogFilteredUsers($ticket, \@users, 'after OwnTicket right check');
-
-    @users = @{ $self->_FilterUsersArrayForTicket($ticket, \@users, $config) };
-
-    $self->_LogFilteredUsers($ticket, \@users, 'before Chooser');
-
-    my $user = $self->_ChooseOwnerForTicket($ticket, \@users, $config);
+    my $user = $self->_ChooseOwnerForTicket($ticket, $users, $config);
 
     return $user;
 }
