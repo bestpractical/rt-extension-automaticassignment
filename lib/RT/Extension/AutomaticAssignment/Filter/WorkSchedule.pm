@@ -41,12 +41,13 @@ sub FiltersUsersArray {
 }
 
 sub FilterOwnersForTicket {
-    my $class  = shift;
-    my $ticket = shift;
-    my $users  = shift;
-    my $config = shift;
+    my $class   = shift;
+    my $ticket  = shift;
+    my $users   = shift;
+    my $config  = shift;
+    my $context = shift;
 
-    my $now = time;
+    my $time = $context->{time};
 
     if ($config->{user_cf}) {
         my @eligible;
@@ -65,7 +66,7 @@ sub FilterOwnersForTicket {
             my $tz = $config->{user_tz} ? $user->Timezone : $RT::Timezone;
 
             push @eligible, $user
-                if $class->_IsTimeWithinBusinessHours($now, $args, $tz);
+                if $class->_IsTimeWithinBusinessHours($time, $args, $tz);
         }
         return \@eligible;
     }

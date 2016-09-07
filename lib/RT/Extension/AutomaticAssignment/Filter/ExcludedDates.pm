@@ -19,13 +19,19 @@ sub _UserCF {
 }
 
 sub FilterOwnersForTicket {
-    my $class  = shift;
-    my $ticket = shift;
-    my $users  = shift;
-    my $config = shift;
+    my $class   = shift;
+    my $ticket  = shift;
+    my $users   = shift;
+    my $config  = shift;
+    my $context = shift;
 
-    my $now = RT::Date->new(RT->SystemUser);
-    $now->SetToNow;
+    my $time = RT::Date->new(RT->SystemUser);
+    if (exists $context->{time}) {
+        $time->Set(Format => 'unix', Value => $context->{time})
+    }
+    else {
+        $time->SetToNow;
+    }
 
     if ($config->{begin} && $config->{end}) {
         my $begin_cf = $class->_UserCF($config->{begin});
@@ -57,7 +63,7 @@ sub FilterOwnersForTicket {
             CUSTOMFIELD     => $begin_cf->Id,
             COLUMN          => 'Content',
             OPERATOR        => '>',
-            VALUE           => $now->ISO,
+            VALUE           => $time->ISO,
             ENTRYAGGREGATOR => 'OR',
         );
 
@@ -66,7 +72,7 @@ sub FilterOwnersForTicket {
             CUSTOMFIELD     => $end_cf->Id,
             COLUMN          => 'Content',
             OPERATOR        => '<',
-            VALUE           => $now->ISO,
+            VALUE           => $time->ISO,
             ENTRYAGGREGATOR => 'OR',
         );
     }
