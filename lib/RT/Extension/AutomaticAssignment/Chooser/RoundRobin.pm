@@ -5,10 +5,11 @@ use base 'RT::Extension::AutomaticAssignment::Chooser';
 use List::Util 'reduce';
 
 sub ChooseOwnerForTicket {
-    my $class  = shift;
-    my $ticket = shift;
-    my @users  = @{ shift(@_) };
-    my $config = shift;
+    my $class   = shift;
+    my $ticket  = shift;
+    my @users   = @{ shift(@_) };
+    my $config  = shift;
+    my $context = shift;
 
     my $queue = $ticket->Queue;
     my $attr = 'AutomaticAssignment-RoundRobin-Queue' . $queue;
@@ -26,7 +27,7 @@ sub ChooseOwnerForTicket {
         $last_assignment{$a->Id} < $last_assignment{$b->Id} ? $a : $b
     } @users;
 
-    if ($owner) {
+    if ($owner && !$context->{dry_run}) {
         $owner->SetAttribute(Name => $attr, Content => time);
     }
 
