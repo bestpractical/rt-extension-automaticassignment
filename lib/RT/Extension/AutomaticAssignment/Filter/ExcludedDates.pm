@@ -1,4 +1,5 @@
 package RT::Extension::AutomaticAssignment::Filter::ExcludedDates;
+use 5.10.1;
 use strict;
 use warnings;
 use base 'RT::Extension::AutomaticAssignment::Filter';
@@ -18,6 +19,10 @@ sub _UserCF {
     return $cf;
 }
 
+sub FiltersUsersArray {
+    return 1;
+}
+
 sub FilterOwnersForTicket {
     my $class   = shift;
     my $ticket  = shift;
@@ -25,56 +30,48 @@ sub FilterOwnersForTicket {
     my $config  = shift;
     my $context = shift;
 
-    my $time = RT::Date->new(RT->SystemUser);
-    if (exists $context->{time}) {
-        $time->Set(Format => 'unix', Value => $context->{time})
-    }
-    else {
-        $time->SetToNow;
-    }
+    my $time = $context->{time} // time;
 
     if ($config->{begin} && $config->{end}) {
         my $begin_cf = $class->_UserCF($config->{begin});
         my $end_cf = $class->_UserCF($config->{end});
 
-        my $subclause = $begin_cf->Id . '-' . $end_cf->Id;
+        my @matches;
 
-        # allow users for whom begin/end is null
-        $users->LimitCustomField(
-            SUBCLAUSE       => "$subclause-begin",
-            CUSTOMFIELD     => $begin_cf->Id,
-            COLUMN          => 'Content',
-            OPERATOR        => 'IS',
-            VALUE           => 'NULL',
-        );
-        $users->LimitCustomField(
-            SUBCLAUSE       => "$subclause-end",
-            CUSTOMFIELD     => $end_cf->Id,
-            COLUMN          => 'Content',
-            OPERATOR        => 'IS',
-            VALUE           => 'NULL',
-        );
+        for my $user (@$users) {
+            my $begin = $user->FirstCustomFieldValue($begin_cf);
+            my $end = $user->FirstCustomFieldValue($end_cf);
 
-        # otherwise, "now" has to be less than begin, or greater than end
-        # (expressed in the query the opposite way: begin has to be greater
-        # than now or end has to be less than now)
-        $users->LimitCustomField(
-            SUBCLAUSE       => "$subclause-begin",
-            CUSTOMFIELD     => $begin_cf->Id,
-            COLUMN          => 'Content',
-            OPERATOR        => '>',
-            VALUE           => $time->ISO,
-            ENTRYAGGREGATOR => 'OR',
-        );
+            # canonicalize to unix timestamp
+            if ($begin) {
+                my $date = RT::Date->new(RT->SystemUser);
+                $date->Set(Format => 'unknown', Value => $begin);
+                $begin = $date->Unix;
+            }
 
-        $users->LimitCustomField(
-            SUBCLAUSE       => "$subclause-end",
-            CUSTOMFIELD     => $end_cf->Id,
-            COLUMN          => 'Content',
-            OPERATOR        => '<',
-            VALUE           => $time->ISO,
-            ENTRYAGGREGATOR => 'OR',
-        );
+            if ($end) {
+                my $date = RT::Date->new(RT->SystemUser);
+                $date->Set(Format => 'unknown', Value => $end);
+                $end = $date->Unix;
+            }
+
+            if ($begin && $end) {
+                next if $begin <= $time && $time <= $end;
+            }
+            elsif ($begin) {
+                next if $begin <= $time;
+            }
+            elsif ($end) {
+                next if $time <= $end;
+            }
+            else {
+                # pass through any user with no dates
+            }
+
+            push @matches, $user;
+        }
+
+        return \@matches;
     }
     else {
         die "Unable to filter ExcludedDates; both 'begin' and 'end' must be provided.";

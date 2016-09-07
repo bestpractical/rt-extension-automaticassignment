@@ -115,11 +115,34 @@ sub eligible_ownerlist_is {
 
 eligible_ownerlist_is '2016-09-07 13:20:00' => [qw//], 'no assignees yet';
 
+# all the new users below will be included in automatic assignment
 add_user 'NoVacation', undef, undef;
 eligible_ownerlist_is '2016-09-07 13:20:00' => [qw/NoVacation/];
 
 add_user 'AfterVacation', '2015-01-01 00:00:00', '2015-01-10 00:00:00';
-eligible_ownerlist_is '2016-09-07 13:20:00' => [qw/NoVacation AfterVacation/];
+add_user 'UpcomingVacation', '2017-01-01 00:00:00', '2017-01-10 00:00:00';
+eligible_ownerlist_is '2016-09-07 13:20:00' => [qw/NoVacation AfterVacation UpcomingVacation/];
+
+add_user 'Leaving', '2016-10-01 00:00:00', undef;
+add_user 'Started', undef, '2016-01-01 00:00:00';
+eligible_ownerlist_is '2016-09-07 13:20:00' => [qw/NoVacation AfterVacation UpcomingVacation Leaving Started/];
+
+add_user 'EpochNoVacation', 'epoch', 'epoch';
+add_user 'EpochLeaving', '2016-10-01 00:00:00', 'epoch';
+add_user 'EpochStarted', 'epoch', '2016-01-01 00:00:00';
+eligible_ownerlist_is '2016-09-07 13:20:00' => [qw/NoVacation AfterVacation UpcomingVacation Leaving Started EpochNoVacation EpochLeaving EpochStarted/];
+
+# all the new users below will not be included in automatic assignment
+add_user 'OnVacation', '2016-09-01 00:00:00', '2016-09-15 00:00:00';
+eligible_ownerlist_is '2016-09-07 13:20:00' => [qw/NoVacation AfterVacation UpcomingVacation Leaving Started EpochNoVacation EpochLeaving EpochStarted/];
+
+add_user 'Left', '2016-03-01 00:00:00', undef;
+add_user 'EpochLeft', '2016-03-01 00:00:00', 'epoch';
+eligible_ownerlist_is '2016-09-07 13:20:00' => [qw/NoVacation AfterVacation UpcomingVacation Leaving Started EpochNoVacation EpochLeaving EpochStarted/];
+
+add_user 'WillStart', undef, '2016-10-01 00:00:00';
+add_user 'EpochWillStart', 'epoch', '2016-10-01 00:00:00';
+eligible_ownerlist_is '2016-09-07 13:20:00' => [qw/NoVacation AfterVacation UpcomingVacation Leaving Started EpochNoVacation EpochLeaving EpochStarted/];
 
 done_testing;
 
