@@ -121,6 +121,55 @@ sub _ConfigForTicket {
     return $config;
 }
 
+sub _SetConfigForQueue {
+    my $self    = shift;
+    my $queue   = shift;
+    my $filters = shift;
+    my $chooser = shift;
+
+    my %config = (
+        filters => [],
+        chooser => {},
+    );
+
+    for my $filter (@$filters) {
+        my $name = delete $filter->{ClassName};
+
+        next unless grep { $_ eq $name } RT->Config->Get('AutomaticAssignmentFilters');
+
+        my $class = "RT::Extension::AutomaticAssignment::Filter::$name";
+        unless ($class->require) {
+            RT->Logger->error("Couldn't load class '$class': $@");
+            return (0, "Couldn't load class '$class'");
+        }
+
+        my $config = $class->CanonicalizeConfig($filter);
+        $config->{_name} = $name;
+
+        push @{ $config{filters} }, $config;
+    }
+
+    {
+        my $name = delete $chooser->{ClassName};
+
+        next unless grep { $_ eq $name } RT->Config->Get('AutomaticAssignmentChoosers');
+
+        my $class = "RT::Extension::AutomaticAssignment::Chooser::$name";
+        unless ($class->require) {
+            RT->Logger->error("Couldn't load class '$class': $@");
+            return (0, "Couldn't load class '$class'");
+        }
+
+        $config{chooser} = $class->CanonicalizeConfig($chooser);
+        $config{chooser}{_name} = $name;
+    }
+
+    return $queue->SetAttribute(
+        Name    => 'AutomaticAssignment',
+        Content => \%config,
+    );
+}
+
 sub _ScripsForQueue {
     my $self = shift;
     my $queue = shift;

@@ -99,49 +99,24 @@ my @filters = RT->Config->Get('AutomaticAssignmentFilters');
 my @choosers = RT->Config->Get('AutomaticAssignmentChoosers');
 
 if ($Update) {
-    my %queue_config;
+    my @filters_config;
+    my %chooser_config;
 
     for my $filter_prefix (split /,/, $Filters) {
         my @config_keys = grep { s/^\Q$filter_prefix\E_// ? $_ : () } keys %ARGS;
-        my %args = map { $_ => $ARGS{"${filter_prefix}_$_"} } @config_keys;
-        my $name = delete $args{ClassName};
-
-        next unless grep { $_ eq $name } RT->Config->Get('AutomaticAssignmentFilters');
-
-        my $class = "RT::Extension::AutomaticAssignment::Filter::$name";
-        unless ($class->require) {
-            RT->Logger->error("Couldn't load class '$class': $@");
-            $m->abort;
-        }
-
-        my $config = $class->CanonicalizeConfig(\%args);
-        $config->{_name} = $name;
-
-        push @{ $queue_config{filters} }, $config;
+        my %filter_config = map { $_ => $ARGS{"${filter_prefix}_$_"} } @config_keys;
+        push @filters_config, \%filter_config;
     }
 
     {
         my @config_keys = grep { s/^\Q$Chooser\E_// ? $_ : () } keys %ARGS;
-        my %args = map { $_ => $ARGS{"${Chooser}_$_"} } @config_keys;
-        my $name = delete $args{ClassName};
-
-        next unless grep { $_ eq $name } RT->Config->Get('AutomaticAssignmentChoosers');
-
-        my $class = "RT::Extension::AutomaticAssignment::Chooser::$name";
-        unless ($class->require) {
-            RT->Logger->error("Couldn't load class '$class': $@");
-            $m->abort;
-        }
-
-        my $config = $class->CanonicalizeConfig(\%args);
-        $config->{_name} = $name;
-
-        $queue_config{chooser} = $config;
+        %chooser_config = map { $_ => $ARGS{"${Chooser}_$_"} } @config_keys;
     }
 
-    my ($ok, $msg) = $QueueObj->SetAttribute(
-        Name    => 'AutomaticAssignment',
-        Content => \%queue_config,
+    my ($ok, $msg) = RT::Extension::AutomaticAssignment->_SetConfigForQueue(
+        $QueueObj,
+        \@filters_config,
+        \%chooser_config,
     );
 
     if ($ok) {
