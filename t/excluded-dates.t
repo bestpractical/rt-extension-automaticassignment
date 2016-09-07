@@ -61,6 +61,7 @@ sub add_user {
     ok($ok, "added user $name to Assignees group");
 
     if ($begin_vacation) {
+        $begin_vacation = '1970-01-01 00:00:00' if $begin_vacation eq 'epoch';
         ($ok, $msg) = $user->AddCustomFieldValue(
             Field => $begin->Id,
             Value => $begin_vacation,
@@ -69,6 +70,7 @@ sub add_user {
     }
 
     if ($end_vacation) {
+        $end_vacation = '1970-01-01 00:00:00' if $end_vacation eq 'epoch';
         ($ok, $msg) = $user->AddCustomFieldValue(
             Field => $end->Id,
             Value => $end_vacation,
