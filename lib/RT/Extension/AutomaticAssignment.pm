@@ -44,9 +44,10 @@ sub _LogFilteredUsers {
 }
 
 sub _EligibleOwnersForTicket {
-    my $self   = shift;
-    my $ticket = shift;
-    my $config = shift || $self->_ConfigForTicket($ticket);
+    my $self    = shift;
+    my $ticket  = shift;
+    my $config  = shift || $self->_ConfigForTicket($ticket);
+    my $context = shift;
 
     my $user_collection = RT::Users->new(RT->SystemUser);
     $user_collection->Limit(
@@ -60,7 +61,7 @@ sub _EligibleOwnersForTicket {
     for my $filter (@{ $config->{filters} }) {
         my $class = $self->_LoadedClass('Filter', $filter->{_name});
         if (!$class->FiltersUsersArray) {
-            $class->FilterOwnersForTicket($ticket, $user_collection, $filter);
+            $class->FilterOwnersForTicket($ticket, $user_collection, $filter, $context);
             $self->_LogFilteredUsers($ticket, $user_collection, $filter);
         }
     }
@@ -81,7 +82,7 @@ sub _EligibleOwnersForTicket {
     for my $filter (@{ $config->{filters} }) {
         my $class = $self->_LoadedClass('Filter', $filter->{_name});
         if ($class->FiltersUsersArray) {
-            $user_list = $class->FilterOwnersForTicket($ticket, $user_list, $filter);
+            $user_list = $class->FilterOwnersForTicket($ticket, $user_list, $filter, $context);
             $self->_LogFilteredUsers($ticket, $user_list, $filter);
         }
     }
@@ -92,13 +93,14 @@ sub _EligibleOwnersForTicket {
 }
 
 sub _ChooseOwnerForTicket {
-    my $self   = shift;
-    my $ticket = shift;
-    my $users  = shift;
-    my $config = shift;
+    my $self    = shift;
+    my $ticket  = shift;
+    my $users   = shift;
+    my $config  = shift;
+    my $context = shift;
 
     my $class = $self->_LoadedClass('Chooser', $config->{chooser}{_name});
-    return $class->ChooseOwnerForTicket($ticket, $users, $config->{chooser});
+    return $class->ChooseOwnerForTicket($ticket, $users, $config->{chooser}, $context);
 }
 
 sub _ConfigForTicket {
@@ -200,16 +202,17 @@ sub _ScripsForQueue {
 }
 
 sub OwnerForTicket {
-    my $self   = shift;
-    my $ticket = shift;
+    my $self    = shift;
+    my $ticket  = shift;
+    my $context = shift || {};
 
     my $config = $self->_ConfigForTicket($ticket);
     return if !$config;
 
-    my $users = $self->_EligibleOwnersForTicket($ticket, $config);
+    my $users = $self->_EligibleOwnersForTicket($ticket, $config, $context);
     return if !$users;
 
-    my $user = $self->_ChooseOwnerForTicket($ticket, $users, $config);
+    my $user = $self->_ChooseOwnerForTicket($ticket, $users, $config, $context);
 
     return $user;
 }
