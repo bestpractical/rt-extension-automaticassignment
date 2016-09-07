@@ -75,9 +75,9 @@ sub _EligibleOwnersForTicket {
         IncludeSuperusers   => 1,
     );
 
-    my @user_list = @{ $user_collection->ItemsArrayRef };
+    my $user_list = $user_collection->ItemsArrayRef;
 
-    $self->_LogFilteredUsers($ticket, \@user_list, 'after OwnTicket right check');
+    $self->_LogFilteredUsers($ticket, $user_list, 'after OwnTicket right check');
 
     for my $filter (@{ $config->{filters} }) {
         my $class = $self->_LoadedClass('Filter', $filter->{_name});
@@ -87,9 +87,9 @@ sub _EligibleOwnersForTicket {
         }
     }
 
-    $self->_LogFilteredUsers($ticket, \@user_list, 'after all filtering');
+    $self->_LogFilteredUsers($ticket, $user_list, 'after all filtering');
 
-    return \@user_list;
+    return $user_list;
 }
 
 sub _ChooseOwnerForTicket {
