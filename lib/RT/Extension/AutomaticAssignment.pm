@@ -102,7 +102,7 @@ sub _ConfigForTicket {
     my $queue = $ticket->QueueObj;
     my $attr = $queue->FirstAttribute('AutomaticAssignment');
     if (!$attr || !$attr->Content) {
-        RT->Logger->error("No AutomaticAssignment config defined; automatic assignment cannot occur.");
+        RT->Logger->debug("No AutomaticAssignment config defined; automatic assignment cannot occur.");
         return;
     }
 
@@ -114,7 +114,7 @@ sub _ConfigForTicket {
 
     # chooser is required
     if (!$config->{chooser}) {
-        RT->Logger->error("No AutomaticAssignment chooser defined for queue '$queue'; automatic assignment cannot occur.");
+        RT->Logger->debug("No AutomaticAssignment chooser defined for queue '$queue'; automatic assignment cannot occur.");
         return;
     }
 
