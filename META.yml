@@ -20,6 +20,7 @@ no_index:
     - html
     - inc
     - static
+    - t
 requires:
   Business::Hours: 0
   perl: 5.8.3
