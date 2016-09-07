@@ -46,7 +46,7 @@ sub _LogFilteredUsers {
 sub _EligibleOwnersForTicket {
     my $self   = shift;
     my $ticket = shift;
-    my $config = shift;
+    my $config = shift || $self->_ConfigForTicket($ticket);
 
     my $user_collection = RT::Users->new(RT->SystemUser);
     $user_collection->Limit(
