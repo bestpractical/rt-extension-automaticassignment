@@ -47,7 +47,7 @@ sub FilterOwnersForTicket {
     my $config  = shift;
     my $context = shift;
 
-    my $time = $context->{time};
+    my $time = $context->{time} // time;
 
     if ($config->{user_cf}) {
         my @eligible;
