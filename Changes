@@ -1,3 +1,6 @@
+0.03  2016-09-09
+    - remove "from initial collection" debug log
+
 0.02  2016-09-09
     - fix some corner cases in ExcludedDates filter
     - debug logging for filters and choosers

@@ -56,8 +56,6 @@ sub _EligibleOwnersForTicket {
         VALUE    => [ RT->System->id, RT->Nobody->id ],
     );
 
-    $self->_LogFilteredUsers($ticket, $user_collection, 'from initial collection');
-
     for my $filter (@{ $config->{filters} }) {
         my $class = $self->_LoadedClass('Filter', $filter->{_name});
         if (!$class->FiltersUsersArray) {
