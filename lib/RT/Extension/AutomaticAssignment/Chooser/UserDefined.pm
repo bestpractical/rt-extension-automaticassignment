@@ -10,6 +10,10 @@ sub ChooseOwnerForTicket {
     my $Config = shift;
 
     my $user = eval $Config->{code};
+    if ($@) {
+        RT::Logger->error("AutomaticAssignment chooser ChooseOwnerForTicket for ticket #" . $Ticket->Id . " failed: ".$@);
+        return (undef);
+    }
 
     return $user;
 }

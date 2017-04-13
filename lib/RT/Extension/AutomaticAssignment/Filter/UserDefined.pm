@@ -14,6 +14,10 @@ sub FilterOwnersForTicket {
 
     for my $User (@Users) {
         push @matches, $User if eval $Config->{code};
+        if ($@) {
+            RT::Logger->error("AutomaticAssignment filter ChooseOwnerForTicket for ticket #" . $Ticket->Id . " failed: ".$@);
+            return (undef);
+        }
     }
 
     return \@matches;
