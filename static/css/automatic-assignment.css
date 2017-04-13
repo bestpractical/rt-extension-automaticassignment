@@ -53,3 +53,7 @@ form.automatic-assignment {
     height: 1em;
     width: 1em;
 }
+
+form.automatic-assignment textarea {
+    font-family: monospace;
+}
