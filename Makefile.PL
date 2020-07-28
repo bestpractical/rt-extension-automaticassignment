@@ -28,6 +28,5 @@ substitute(
     'lib/RT/Extension/AutomaticAssignment/Test.pm',
 );
 
-WriteAll;
 sign;
-
+WriteAll;
