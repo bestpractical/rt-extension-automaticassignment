@@ -322,7 +322,7 @@ or via the web at
 
 =head1 COPYRIGHT
 
-This extension is Copyright (C) 2016 Best Practical Solutions, LLC.
+This extension is Copyright (C) 2016-2020 Best Practical Solutions, LLC.
 
 This is free software, licensed under:
 
