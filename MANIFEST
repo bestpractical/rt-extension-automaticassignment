@@ -53,9 +53,7 @@ MANIFEST			This list of files
 META.yml
 README
 static/css/automatic-assignment.css
-static/images/remove.png
 static/js/automatic-assignment.js
-static/js/jquery.ui.sortable.js
 t/basic.t
 t/compile.t
 t/excluded-dates.t

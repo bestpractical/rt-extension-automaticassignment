@@ -4,8 +4,6 @@ use warnings;
 
 our $VERSION = '0.04';
 
-RT->AddJavaScript('jquery.ui.sortable.js');
-
 RT->AddStyleSheets("automatic-assignment.css");
 RT->AddJavaScript("automatic-assignment.js");
 
@@ -221,7 +219,7 @@ RT-Extension-AutomaticAssignment - automatically assign tickets based on rules
 
 =head1 INSTALLATION
 
-RT-Extension-AutomaticAssignment requires version RT 4.2.0 or later.
+RT-Extension-AutomaticAssignment requires version RT 5.0 or later.
 
 =over
 

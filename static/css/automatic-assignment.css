@@ -1,14 +1,6 @@
-form.automatic-assignment {
-    max-width: 700px;
-}
-
 .sortable-box,
 .sortable-placeholder {
-    border-style: solid;
-    border-width: 1.5px;
     margin: 5px;
-    border-color: #aaa;
-    background-color: #eee;
 }
 
 .sortable-placeholder {
@@ -25,10 +17,6 @@ form.automatic-assignment {
     padding: 5px 0 0 5px;
 }
 
-.sortable-box select {
-    min-width: 10em;
-}
-
 .replacing .sortable-box {
     -webkit-filter: grayscale(80%);
     filter: grayscale(80%);
@@ -43,15 +31,6 @@ form.automatic-assignment {
 .filters.adding .loading,
 .chooser.replacing .loading {
     visibility: visible;
-}
-
-.sortable-box .remove {
-    float: right;
-}
-
-.sortable-box .remove img {
-    height: 1em;
-    width: 1em;
 }
 
 form.automatic-assignment textarea {
