@@ -7,9 +7,9 @@
 
 <div class="filters">
 
-<h3>Filters</h3>
+<h3><&|/l&>Filters</&></h3>
 
-<p><i>Filters reduce the pool of eligible owners. Each user must fulfill the requirements of all the filters below to be included in this queue's automatic assignment.</i></p>
+<p><i><&|/l&>Filters reduce the pool of eligible owners. Each user must fulfill the requirements of all the filters below to be included in this queue's automatic assignment.</&></i></p>
 
 <select name="FilterType" class="selectpicker">
 <option value="">-</option>
@@ -25,9 +25,9 @@
 
 </select>
 
-<input type="submit" class="button btn btn-primary form-control" name="AddFilter" value="Add Filter">
+<input type="submit" class="button btn btn-primary form-control" name="AddFilter" value="<&|/l&>Add Filter</&>">
 
-<span class="loading">Loading...</span>
+<span class="loading"><&|/l&>Loading...</&></span>
 
 <div class="filter-list">
 
@@ -53,9 +53,9 @@
 
 <div class="chooser">
 
-<h3>Chooser</h3>
+<h3><&|/l&>Chooser</&></h3>
 
-<p><i>A chooser selects a single owner from the filtered set of eligible users.</i></p>
+<p><i><&|/l&>A chooser selects a single owner from the filtered set of eligible users.</&></i></p>
 
 % my $chooser_config = $config->{chooser};
 % my $name = $chooser_config->{_name};
@@ -139,7 +139,7 @@ my $config = $attr ? $attr->Content : {
 
 my $scrips = RT::Extension::AutomaticAssignment->_ScripsForQueue($QueueObj);
 if ($scrips->Count == 0) {
-    push @results, "No scrips for automatic assignment are applied to this queue. Please see the AutomaticAssignment documentation for setup instructions.";
+    push @results, loc("No scrips for automatic assignment are applied to this queue. Please see the AutomaticAssignment documentation for setup instructions.");
 }
 </%INIT>
 <%ARGS>

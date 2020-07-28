@@ -1,5 +1,5 @@
 <&| /Admin/Queues/Elements/SortableBox, prefix => $prefix, is_filter => 1, class_name => 'MemberOfRole' &>
-<p>This filter selects eligible owners by their role membership. Only members of the following role, either on the queue or on the ticket itself, will be automatically assigned tickets.</p>
+<p><&|/l&>This filter selects eligible owners by their role membership. Only members of the following role, either on the queue or on the ticket itself, will be automatically assigned tickets.</&></p>
 
 <div class="form-row">
   <div class="col-3 label">

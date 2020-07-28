@@ -1,5 +1,5 @@
 <&| /Admin/Queues/Elements/SortableBox, prefix => $prefix, is_filter => 1, class_name => 'MemberOfGroup', &>
-<p>This filter selects eligible owners by their group membership. Only members of the following group will be automatically assigned tickets.</p>
+<p><&|/l&>This filter selects eligible owners by their group membership. Only members of the following group will be automatically assigned tickets.</&></p>
 
 % if ($groups->Count) {
 <div class="form-row">
@@ -16,7 +16,7 @@
   </div>
 </div>
 % } else {
-<p>No groups found.</p>
+<p><&|/l&>No groups found.</&></p>
 % }
 </&>
 <%INIT>
