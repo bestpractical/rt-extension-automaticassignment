@@ -3,7 +3,8 @@ NAME
     rules
 
 INSTALLATION
-    RT-Extension-AutomaticAssignment requires version RT 4.2.0 or later.
+    RT-Extension-AutomaticAssignment 1.* versions require RT 5.0 or later.
+    Use 0.* versions if you are still using RT 4.
 
     perl Makefile.PL
     make

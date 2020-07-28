@@ -2,7 +2,7 @@ package RT::Extension::AutomaticAssignment;
 use strict;
 use warnings;
 
-our $VERSION = '0.04';
+our $VERSION = '1.00';
 
 RT->AddStyleSheets("automatic-assignment.css");
 RT->AddJavaScript("automatic-assignment.js");
@@ -219,7 +219,8 @@ RT-Extension-AutomaticAssignment - automatically assign tickets based on rules
 
 =head1 INSTALLATION
 
-RT-Extension-AutomaticAssignment requires version RT 5.0 or later.
+RT-Extension-AutomaticAssignment 1.* versions require RT 5.0 or later.
+Use 0.* versions if you are still using RT 4.
 
 =over
 
