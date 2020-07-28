@@ -241,7 +241,7 @@ in your database.
 If you are upgrading this module, check for upgrading instructions
 in case changes need to be made to your database.
 
-=item Edit your /opt/rt4/etc/RT_SiteConfig.pm
+=item Edit your /opt/rt5/etc/RT_SiteConfig.pm
 
 Add this line:
 
@@ -254,7 +254,7 @@ filter, which exposes the RT's SLA business hours as custom field values:
 
 =item Clear your mason cache
 
-    rm -rf /opt/rt4/var/mason_data/obj
+    rm -rf /opt/rt5/var/mason_data/obj
 
 =item Restart your webserver
 

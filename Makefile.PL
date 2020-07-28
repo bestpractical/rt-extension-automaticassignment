@@ -5,8 +5,8 @@ RTx 'RT-Extension-AutomaticAssignment';
 
 requires 'Business::Hours';
 
-requires_rt '4.2';
-rt_too_new '4.6';
+requires_rt '5.0';
+rt_too_new '5.2';
 
 my ($lib_path) = $INC{'RT.pm'} =~ /^(.*)[\\\/]/;
 my $local_lib_path = "$RT::LocalPath/lib";

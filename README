@@ -19,7 +19,7 @@ INSTALLATION
         If you are upgrading this module, check for upgrading instructions
         in case changes need to be made to your database.
 
-    Edit your /opt/rt4/etc/RT_SiteConfig.pm
+    Edit your /opt/rt5/etc/RT_SiteConfig.pm
         Add this line:
 
             Plugin( "RT::Extension::AutomaticAssignment" );
@@ -31,7 +31,7 @@ INSTALLATION
             Set( @CustomFieldValuesSources, "RT::CustomFieldValues::ServiceBusinessHours" );
 
     Clear your mason cache
-            rm -rf /opt/rt4/var/mason_data/obj
+            rm -rf /opt/rt5/var/mason_data/obj
 
     Restart your webserver
     Create scrips
