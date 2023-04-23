@@ -17,8 +17,9 @@ else {
     $class = "RT::Extension::AutomaticAssignment::Chooser::$class_name";
 }
 
-unless ($class->require) {
-    RT->Logger->error("Couldn't load class '$class': $@");
+my ($ok, $msg) = RT::StaticUtil::RequireModule( $class );
+unless ( $ok ) {
+    RT->Logger->error("Couldn't load class '$class': $msg");
     $m->abort;
 }
 
