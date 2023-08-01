@@ -16,8 +16,12 @@ sub _LoadedClass {
     my $name      = shift;
 
     my $class = "RT::Extension::AutomaticAssignment::${namespace}::$name";
-    my ($ok, $msg) = RT::StaticUtil::RequireModule( $class );
-    die $msg unless $ok;
+    if ( RT::Handle::cmp_version($RT::VERSION, '5.0.4') >= 0 ) {
+        my ($ok, $msg) = RT::StaticUtil::RequireModule( $class );
+        die $msg unless $ok;
+    } else {
+        $class->require or die $UNIVERSAL::require::ERROR;
+    }
     return $class;
 }
 
@@ -143,10 +147,17 @@ sub _SetConfigForQueue {
         next unless grep { $_ eq $name } RT->Config->Get('AutomaticAssignmentFilters');
 
         my $class = "RT::Extension::AutomaticAssignment::Filter::$name";
-        my ($ok, $msg) = RT::StaticUtil::RequireModule( $class );
-        unless ( $ok ) {
-            RT->Logger->error("Couldn't load class '$class': $msg");
-            return (0, "Couldn't load class '$class'");
+        if ( RT::Handle::cmp_version($RT::VERSION, '5.0.4') >= 0 ) {
+            my ($ok, $msg) = RT::StaticUtil::RequireModule( $class );
+            unless ( $ok ) {
+                RT->Logger->error("Couldn't load class '$class': $msg");
+                return (0, "Couldn't load class '$class'");
+            }
+        } else {
+            unless ($class->require) {
+                RT->Logger->error("Couldn't load class '$class': $@");
+                return (0, "Couldn't load class '$class'");
+            }
         }
 
         my $config = $class->CanonicalizeConfig($filter);
@@ -161,10 +172,17 @@ sub _SetConfigForQueue {
         next unless grep { $_ eq $name } RT->Config->Get('AutomaticAssignmentChoosers');
 
         my $class = "RT::Extension::AutomaticAssignment::Chooser::$name";
-        my ($ok, $msg) = RT::StaticUtil::RequireModule( $class );
-        unless ( $ok ) {
-            RT->Logger->error("Couldn't load class '$class': $msg");
-            return (0, "Couldn't load class '$class'");
+        if ( RT::Handle::cmp_version($RT::VERSION, '5.0.4') >= 0 ) {
+            my ($ok, $msg) = RT::StaticUtil::RequireModule( $class );
+            unless ( $ok ) {
+                RT->Logger->error("Couldn't load class '$class': $msg");
+                return (0, "Couldn't load class '$class'");
+            }
+        } else {
+            unless ($class->require) {
+                RT->Logger->error("Couldn't load class '$class': $@");
+                return (0, "Couldn't load class '$class'");
+            }
         }
 
         $config{chooser} = $class->CanonicalizeConfig($chooser);
