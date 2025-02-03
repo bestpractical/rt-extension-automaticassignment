@@ -55,31 +55,6 @@ htmx.onLoad(function () {
         }
     });
 
-    form.find('select[name=ChooserType]').change(function (e) {
-        e.preventDefault();
-        var chooserName = jQuery(this).val();
-        var params = {
-            Name: chooserName,
-            Queue: queueId
-        };
-
-        chooserContainer.addClass('replacing');
-        chooserContainer.find('.sortable-box :input').attr('disabled', true);
-
-        jQuery.ajax({
-            url: RT.Config.WebHomePath + "/Helpers/SelectChooser",
-            data: params,
-            success: function (html) {
-                chooserContainer.find('.sortable-box').replaceWith(html);
-                chooserContainer.removeClass('replacing');
-                chooserField.val('Chooser_' + chooserName);
-            },
-            error: function (xhr, reason) {
-                alert(reason);
-            }
-        });
-    });
-
     form.on('click', '.sortable-box .remove', function (e) {
         e.preventDefault();
         jQuery(this).closest('.sortable-box').slideUp(400, function () {

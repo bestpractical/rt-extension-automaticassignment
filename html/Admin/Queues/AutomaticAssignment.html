@@ -33,7 +33,7 @@
 
 </select>
 
-<input type="submit" class="button btn btn-primary form-control" name="AddFilter" value="<&|/l&>Add Filter</&>">
+<input type="button" class="button btn btn-primary form-control" name="AddFilter" value="<&|/l&>Add Filter</&>">
 
 <span class="loading"><&|/l&>Loading...</&></span>
 
@@ -66,10 +66,16 @@
 <p><i><&|/l&>A chooser selects a single owner from the filtered set of eligible users.</&></i></p>
 
 % my $chooser_config = $config->{chooser};
-% my $name = $chooser_config->{_name};
+% my $name = $ChooserType // $chooser_config->{_name};
 % my $prefix = "Chooser_${name}";
 
-<select name="ChooserType" class="selectpicker">
+<select name="ChooserType"
+        class="selectpicker"
+        hx-trigger="change"
+        hx-post="AutomaticAssignment.html"
+        hx-swap="innerHTML"
+        hx-target="#chooser-details"
+        hx-select="#chooser-details">
 
 % for my $chooser (@choosers) {
 % my $class = "RT::Extension::AutomaticAssignment::Chooser::$chooser";
@@ -92,10 +98,12 @@
 
 <span class="loading">Loading...</span>
 
+<div id="chooser-details">
 % my $path = "/Admin/Queues/Elements/Chooser/$name";
 % $m->comp($path, prefix => $prefix, config => $chooser_config, queue => $QueueObj);
 
 <input type="hidden" class="hidden" name="Chooser" value="<% $prefix %>" />
+</div>
 
 </div>
 
@@ -163,4 +171,5 @@ $id => undef
 $Update => undef
 $Filters => undef
 $Chooser => undef
+$ChooserType => undef
 </%ARGS>
