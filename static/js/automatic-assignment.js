@@ -1,4 +1,4 @@
-jQuery(function () {
+htmx.onLoad(function () {
     var form = jQuery("#automatic-assignment");
     var addFilterSelect = form.find('select[name=FilterType]');
     var filtersField = form.find('input[name=Filters]');
