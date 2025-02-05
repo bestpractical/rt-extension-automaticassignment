@@ -33,11 +33,9 @@ if ( RT::Handle::cmp_version($RT::VERSION, '5.0.4') >= 0 ) {
 
 my $title_right
     = $is_filter
-    ? ( '<a href="#" class="remove"><span class="fas fa-times icon-bordered fa-2x" alt="'
-        . loc('Delete')
-        . '" data-original-title="'
-        . loc('Delete')
-        . '" data-toggle="tooltip" data-placement="top"></span></a>' )
+    ? ( '<a href="#" class="remove">'
+        . GetSVGImage( Name => 'close-circle', Title => loc('Delete') )
+        . '</a>' )
     : '';
 </%INIT>
 <%ARGS>
