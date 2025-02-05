@@ -6,6 +6,7 @@ htmx.onLoad(function () {
     var filterContainer = form.find('.filters');
     var chooserContainer = form.find('.chooser');
     var filterList = form.find('.filter-list');
+    var filterListUl = filterList.find('ul');
     var addFilterButton = form.find('input.button[name=AddFilter]');
 
     var i = filterList.find('.sortable-box').length;
@@ -38,7 +39,8 @@ htmx.onLoad(function () {
                 url: RT.Config.WebHomePath + "/Helpers/AddFilter",
                 data: params,
                 success: function (html) {
-                    jQuery(html).prependTo(filterList).hide().slideDown();
+                    var newElements = jQuery(html).prependTo(filterListUl).hide().slideDown();
+                    RT.selectionBox.registerDrag(newElements[0]);
                     refreshFiltersField();
                     filterContainer.removeClass('adding');
                     addFilterSelect.val('').attr('disabled', false);
@@ -62,15 +64,17 @@ htmx.onLoad(function () {
         });
     });
 
-    filterList.sortable({
-        axis: 'y',
-        items: '.sortable-box',
-        containment: 'parent',
-        placeholder: 'sortable-placeholder',
-        forcePlaceholderSize: true,
-        update: function (event, ui) {
-            refreshFiltersField();
-        }
+    jQuery('.sortable-filter').each(function() {
+        RT.selectionBox.registerDrag(this);
     });
+
+    jQuery('.filter-list').each(function() {
+        RT.selectionBox.registerDrop(this);
+    });
+
+    jQuery('.filter-list').on('dragend', function() {
+       refreshFiltersField();
+    });
+
 });
 

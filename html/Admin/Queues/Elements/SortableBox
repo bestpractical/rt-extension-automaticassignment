@@ -1,3 +1,4 @@
+<li draggable="true" class="sortable-filter">
 <div data-prefix="<% $prefix %>" class="sortable-box">
 <&|/Widgets/TitleBox, title => $class->Description, titleright_raw => $title_right &>
 <input type="hidden" class="hidden" name="<% $prefix %>" value="1" />
@@ -8,6 +9,7 @@
 
 </&>
 </div>
+</li>
 <%INIT>
 my $class;
 if ($is_filter) {

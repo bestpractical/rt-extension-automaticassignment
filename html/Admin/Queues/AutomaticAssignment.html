@@ -37,8 +37,8 @@
 
 <span class="loading"><&|/l&>Loading...</&></span>
 
-<div class="filter-list">
-
+<div class="filter-list destination">
+<ul>
 % my $i = 0;
 % my $filters_value = "";
 % for my $filter (@{ $config->{filters} }) {
@@ -51,6 +51,8 @@
 %    $m->comp($path, prefix => $prefix, config => $filter, queue => $QueueObj);
 % }
 
+<p class="rt-drop-placeholder m-1 p-2 border rounded"><&|/l&>Place here</&></p>
+</ul>
 </div>
 
 <input type="hidden" class="hidden" name="Filters" value="<% $filters_value %>" />
