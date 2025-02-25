@@ -2,12 +2,12 @@
 <p><&|/l&>This filter selects eligible owners by their group membership. Only members of the following group will be automatically assigned tickets.</&></p>
 
 % if ($groups->Count) {
-<div class="form-row">
-  <div class="col-3 label">
+<div class="row">
+  <div class="col-3 ">
     <&|/l&>Group</&>:
   </div>
-  <div class="col-9 value">
-    <select id="<% $prefix %>_group" name="<% $prefix %>_group" class="form-control selectpicker">
+  <div class="col-9">
+    <select id="<% $prefix %>_group" name="<% $prefix %>_group" class=" selectpicker">
       <option value="">-</option>
 %   while (my $group = $groups->Next) {
       <option <% ($config->{group}||0) == $group->Id ? "selected" : "" %> value="<% $group->Id %>"><% $group->Name %></option>

@@ -1,12 +1,12 @@
 <&| /Admin/Queues/Elements/SortableBox, prefix => $prefix, is_filter => 1, class_name => 'MemberOfRole' &>
 <p><&|/l&>This filter selects eligible owners by their role membership. Only members of the following role, either on the queue or on the ticket itself, will be automatically assigned tickets.</&></p>
 
-<div class="form-row">
-  <div class="col-3 label">
+<div class="row">
+  <div class="col-3 ">
     <&|/l&>Role</&>:
   </div>
-  <div class="col-9 value">
-    <select id="<% $prefix %>_role" name="<% $prefix %>_role" class="selectpicker form-control">
+  <div class="col-9">
+    <select id="<% $prefix %>_role" name="<% $prefix %>_role" class="selectpicker ">
       <option value="">-</option>
 %   for my $role (qw/AdminCc Cc Requestor/) {
       <option <% ($config->{role}||'') eq $role ? "selected" : "" %> value="<% $role %>"><% $role %></option>

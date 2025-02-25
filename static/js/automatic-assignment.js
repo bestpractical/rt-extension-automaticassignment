@@ -7,7 +7,7 @@ htmx.onLoad(function () {
     var chooserContainer = form.find('.chooser');
     var filterList = form.find('.filter-list');
     var filterListUl = filterList.find('ul');
-    var addFilterButton = form.find('input.button[name=AddFilter]');
+    var addFilterButton = form.find('input.btn[name=AddFilter]');
 
     var i = filterList.find('.sortable-box').length;
     var queueId = form.find('input[name=id]').val();
