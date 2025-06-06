@@ -200,7 +200,7 @@ sub _ScripsForQueue {
     my $queue = shift;
 
     my $scrips = RT::Scrips->new($queue->CurrentUser);
-    $scrips->LimitToQueue($queue->Id);
+    $scrips->LimitToObjectId($queue->Id);
     $scrips->LimitToGlobal;
     my $scripactions = $scrips->Join(
         ALIAS1 => 'main',
